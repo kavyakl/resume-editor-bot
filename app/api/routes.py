@@ -1,0 +1,380 @@
+import logging
+from fastapi import APIRouter, HTTPException, UploadFile, File, Form
+from typing import Dict, Any, List, Optional
+from app.services.rag_service import RAGService
+from app.services.job_analysis_service import JobAnalysisService
+from app.services.export_service import ExportService
+from app.services.resume_parser_service import ResumeParserService
+from app.services.project_parser import ProjectParserService
+from app.services.project_store import ProjectStoreService
+from app.services.relevance_ranker import RelevanceRanker
+from app.services.resume_writer import ResumeWriterService
+from app.core.job_parser import JobParserService
+from pydantic import BaseModel
+import os
+import tempfile
+
+router = APIRouter()
+logger = logging.getLogger(__name__)
+rag_service = RAGService()
+job_analysis_service = JobAnalysisService()
+export_service = ExportService()
+resume_parser_service = ResumeParserService()
+project_parser_service = ProjectParserService()
+project_store_service = ProjectStoreService()
+relevance_ranker_service = RelevanceRanker()
+resume_writer_service = ResumeWriterService(project_store_service)
+job_parser_service = JobParserService()
+
+class ResumeSection(BaseModel):
+    section_name: str
+    content: str
+
+class QueryRequest(BaseModel):
+    query: str
+    num_results: int = 3
+
+class JobDescriptionRequest(BaseModel):
+    job_description: str
+
+class ResumeData(BaseModel):
+    sections: Dict[str, str]
+
+class ExportRequest(BaseModel):
+    resume_data: ResumeData
+    format: str  # "pdf", "docx", or "json"
+
+# New project-based models
+class ProjectDumpRequest(BaseModel):
+    dump_text: str
+    project_title: str = None
+
+class GenerateResumeRequest(BaseModel):
+    job_description: str
+    candidate_skills: List[str] = None
+    include_sections: List[str] = None
+
+class OptimizeSectionRequest(BaseModel):
+    current_section: str
+    section_name: str
+    job_description: str
+
+class TailoredResumeRequest(BaseModel):
+    job_description: str
+    include_sections: list[str]
+    candidate_skills: list[str] = [] # Making it optional, though not used in generation
+
+@router.post("/optimize-section")
+async def optimize_section(section: ResumeSection, job_description: str):
+    try:
+        optimized_content = await rag_service.optimize_section(
+            section.section_name,
+            section.content,
+            job_description
+        )
+        return {"optimized_content": optimized_content}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/query")
+async def query_vector_store(request: QueryRequest):
+    try:
+        results = await rag_service.query(request.query, request.num_results)
+        return {"results": results}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/upload-resume")
+async def upload_resume(file: UploadFile = File(...)):
+    if not file.filename.endswith('.docx'):
+        raise HTTPException(
+            status_code=400,
+            detail="Only .docx files are supported"
+        )
+        
+    try:
+        # Read file content
+        content = await file.read()
+        
+        # Create a temporary file
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.docx') as temp_file:
+            temp_file.write(content)
+            temp_file_path = temp_file.name
+        
+        try:
+            # Parse resume
+            parsed_resume = resume_parser_service.parse_docx(temp_file_path)
+            
+            # Create vector store
+            await rag_service.create_vector_store(parsed_resume)
+            
+            return {
+                "status": "success",
+                "message": "Resume uploaded and processed successfully",
+                "parsed_data": parsed_resume
+            }
+            
+        except ValueError as ve:
+            raise HTTPException(status_code=400, detail=str(ve))
+        except Exception as e:
+            raise HTTPException(
+                status_code=500,
+                detail=f"Error processing resume: {str(e)}"
+            )
+        finally:
+            # Clean up temp file
+            try:
+                os.unlink(temp_file_path)
+            except:
+                pass
+                
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error uploading file: {str(e)}"
+        )
+
+@router.post("/analyze-job")
+async def analyze_job(request: JobDescriptionRequest):
+    try:
+        analysis = await job_analysis_service.analyze_job_description(request.job_description)
+        return analysis
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/calculate-skill-match")
+async def calculate_skill_match(resume_data: ResumeData, job_description: str):
+    try:
+        match_results = await job_analysis_service.calculate_skill_match(
+            resume_data.sections.get("skills", ""),
+            job_description
+        )
+        return match_results
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/suggest-improvements")
+async def suggest_improvements(section: ResumeSection, job_description: str):
+    try:
+        suggestions = await job_analysis_service.suggest_improvements(
+            section.section_name,
+            section.content,
+            job_description
+        )
+        return suggestions
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/export")
+async def export_resume(request: ExportRequest):
+    try:
+        if request.format == "pdf":
+            file_path = export_service.export_to_pdf(request.resume_data.sections)
+        elif request.format == "docx":
+            file_path = export_service.export_to_docx(request.resume_data.sections)
+        elif request.format == "json":
+            file_path = export_service.export_to_json(request.resume_data.sections)
+        else:
+            raise HTTPException(status_code=400, detail="Unsupported export format")
+        
+        return {"file_path": file_path}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/use-existing-resume")
+async def use_existing_resume():
+    try:
+        # Use the existing resume file
+        resume_path = "Kalyanam_resume.docx"
+        if not os.path.exists(resume_path):
+            raise HTTPException(
+                status_code=404,
+                detail="Resume file not found"
+            )
+            
+        # Parse resume
+        parsed_resume = resume_parser_service.parse_docx(resume_path)
+        
+        # Create vector store
+        await rag_service.create_vector_store(parsed_resume)
+        
+        return {
+            "status": "success",
+            "message": "Resume processed successfully",
+            "parsed_data": parsed_resume
+        }
+            
+    except ValueError as ve:
+        raise HTTPException(status_code=400, detail=str(ve))
+    except Exception as e:
+        raise HTTPException(
+            status_code=500,
+            detail=f"Error processing resume: {str(e)}"
+        )
+
+# New project-based routes
+@router.post("/project-dump")
+async def parse_project_dump(request: ProjectDumpRequest):
+    """Parse a natural language project dump into structured format."""
+    try:
+        result = await project_parser_service.parse_and_save_project(
+            request.dump_text, 
+            request.project_title
+        )
+        return result
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/projects")
+async def get_all_projects():
+    """Get all stored projects."""
+    try:
+        projects = project_store_service.load_all_projects()
+        return {"projects": projects, "count": len(projects)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/projects/{project_title}")
+async def get_project_by_title(project_title: str):
+    """Get a specific project by title."""
+    try:
+        project = project_store_service.get_project_by_title(project_title)
+        if not project:
+            raise HTTPException(status_code=404, detail="Project not found")
+        return project
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/projects/search/{query}")
+async def search_projects(query: str, limit: int = 5):
+    """Search projects by query."""
+    try:
+        projects = project_store_service.search_projects(query, limit)
+        return {"projects": projects, "query": query, "count": len(projects)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/projects/technology/{technology}")
+async def get_projects_by_technology(technology: str):
+    """Get projects that use a specific technology."""
+    try:
+        projects = project_store_service.get_projects_by_technology(technology)
+        return {"projects": projects, "technology": technology, "count": len(projects)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/projects/statistics")
+async def get_project_statistics():
+    """Get statistics about stored projects."""
+    try:
+        stats = project_store_service.get_project_statistics()
+        return stats
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/parse-job")
+async def parse_job_description(request: JobDescriptionRequest):
+    """Parse job description into structured format."""
+    try:
+        job_data = await job_parser_service.parse_job_description(request.job_description)
+        return job_data
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/rank-projects")
+async def rank_projects_for_job(request: JobDescriptionRequest, top_k: int = 5):
+    """Rank projects by relevance to job description."""
+    try:
+        ranked_projects = await relevance_ranker_service.rank_projects_for_job(
+            request.job_description, top_k
+        )
+        return {"ranked_projects": ranked_projects, "count": len(ranked_projects)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/project-recommendations")
+async def get_project_recommendations(job_description: JobDescriptionRequest):
+    """Get comprehensive project recommendations for a job."""
+    try:
+        recommendations = await relevance_ranker_service.get_project_recommendations(job_description.job_description)
+        return recommendations
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/generate-resume-section")
+async def generate_resume_section(section_name: str, section_type: str, request: JobDescriptionRequest):
+    """Generate a specific resume section."""
+    try:
+        # Get ranked projects
+        ranked_projects = await relevance_ranker_service.rank_projects_for_job(
+            request.job_description, top_k=10
+        )
+        
+        # Generate section
+        section_content = await resume_writer_service.generate_resume_section(
+            section_name, ranked_projects, request.job_description, section_type
+        )
+        
+        return {
+            "section_name": section_name,
+            "section_type": section_type,
+            "content": section_content
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/generate-tailored-resume", response_model=dict)
+async def generate_tailored_resume_route(request: TailoredResumeRequest):
+    """
+    Generate a complete, tailored resume with specific sections.
+    """
+    try:
+        generated_data = resume_writer_service.generate_tailored_resume(
+            job_description=request.job_description,
+            include_sections=request.include_sections,
+        )
+        return generated_data
+    except Exception as e:
+        logger.error(f"Error generating tailored resume: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/optimize-resume-section")
+async def optimize_resume_section(request: OptimizeSectionRequest):
+    """Optimize an existing resume section for a job."""
+    try:
+        optimized_content = await resume_writer_service.optimize_existing_section(
+            request.current_section,
+            request.section_name,
+            request.job_description
+        )
+        return {
+            "section_name": request.section_name,
+            "original_content": request.current_section,
+            "optimized_content": optimized_content
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/generate-cover-letter-intro")
+async def generate_cover_letter_intro(request: JobDescriptionRequest, candidate_skills: List[str] = None):
+    """Generate a cover letter introduction paragraph."""
+    try:
+        intro = await resume_writer_service.generate_cover_letter_intro(
+            request.job_description, candidate_skills
+        )
+        return {"cover_letter_intro": intro}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/create-project-vector-store")
+async def create_project_vector_store():
+    """Create vector store from all projects."""
+    try:
+        success = await relevance_ranker_service.create_project_vector_store()
+        return {"status": "success", "message": "Project vector store created successfully"}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/health")
+async def health_check():
+    return {"status": "healthy"} 

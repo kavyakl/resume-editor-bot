@@ -1,0 +1,54 @@
+title: Neural Network Optimization Analysis Framework
+description: A comprehensive framework for analyzing, optimizing, and deploying neural
+  networks across multiple datasets with a focus on edge device compatibility and
+  performance profiling. The framework provides a complete pipeline for training neural
+  networks on 10+ datasets with different activation functions, implementing structural
+  pruning to reduce model complexity while maintaining accuracy, and deploying optimized
+  models on edge devices.
+role: Developer
+technologies:
+- Neural Networks
+- ONNX
+- Edge Impulse
+- Arduino
+- C++
+methods:
+- Training neural networks
+- Structural pruning
+- Multi-activation analysis
+- Correlation-based neuron pruning
+- Edge device optimization
+- Model architecture analysis
+- Parameter counting
+- Inference time profiling
+- LLM-powered insights
+results: Developed a comprehensive framework that supports training and optimization
+  of neural networks across 10+ datasets, implements structural pruning to maintain
+  model accuracy while reducing complexity, and provides tools for cross-platform
+  model deployment and edge device compatibility.
+impact: The framework can be used across various domains like medical diagnosis, fraud
+  detection, and agricultural analysis, providing a streamlined process from training
+  to deployment with bulk processing capabilities, result consolidation, and comprehensive
+  reporting.
+duration: null
+team_size: 1
+challenges: null
+created_at: '2025-06-22T11:58:00.127201'
+source_text: I developed a comprehensive Neural Network Optimization Analysis Framework
+  for analyzing, optimizing, and deploying neural networks across multiple datasets
+  with focus on edge device compatibility and performance profiling. The framework
+  provides a complete pipeline for training neural networks on 10+ datasets with different
+  activation functions (ReLU, Sigmoid, Tanh), implementing structural pruning to reduce
+  model complexity while maintaining accuracy, ONNX export for cross-platform deployment,
+  Edge Impulse profiling for embedded device compatibility, and Arduino deployment
+  with optimized C++ implementations. Key features include multi-activation analysis
+  comparing ReLU, Sigmoid, and Tanh activations with automated batch processing, correlation-based
+  neuron pruning with activity and sensitivity analysis, edge device optimization
+  with ONNX model export and Edge Impulse integration, comprehensive analysis including
+  model architecture analysis, parameter counting, inference time profiling, and LLM-powered
+  insights. The system supports datasets including Iris, Breast Cancer, Credit Card,
+  Balance, Customers, Fetal Health, Liver Diagnostic, Raisin, and Yeast across various
+  domains like medical diagnosis, fraud detection, and agricultural analysis. The
+  framework includes automated end-to-end processing from training to deployment with
+  bulk processing capabilities, result consolidation, and comprehensive reporting.
+filename: neural_network_optimization_analysis_framework

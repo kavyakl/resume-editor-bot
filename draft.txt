@@ -1,0 +1,49 @@
+Lakshmi Kavya Kalyanam
+Tampa, FL · +1-813-609-9796 · kavyakalyanamk@gmail.com
+linkedin.com/in/lakshmikavya-kalyanam-a88633131
+
+Objective
+PhD Candidate in Computer Science specializing in deep neural network optimization, generative AI, and deployment of lightweight models on resource-constrained platforms. Experienced in pruning, quantization, sparse training, and explainable AI. Seeking applied ML/LLM roles with a focus on scalable GenAI systems.
+
+Technical Skills
+Programming & Scripting: C++, JSON
+AI/ML Frameworks: PyTorch 2.1.2, ONNX
+Model Optimization: Dynamic Pruning, Model Compression, Sparsity Optimization
+GenAI & NLP: OpenAI GPT models, NLTK
+Edge Deployment: Edge Computing, Edge Impulse
+Hardware & Tools: CUDA 12.3 (cu121), NVIDIA GeForce GTX 1080 Ti (11264 MiB), Arduino, PYNQ Z1 AP-SoC
+Cloud & Infra: IoT, Wireless Distributed Network
+DevOps & Workflow: GPU Training
+
+Research Experience
+PhD Researcher, University of South Florida (2019–Present)
+•	1. "Developed a Distributed Real-Time Object Detection Framework for IoT edge nodes, implementing neural networks on constrained platforms using Binarized Neural Network (BNN) image classification algorithm and PYNQ Z1 AP-SoC, achieving a real-time performance of 19.23 frames per second with three nodes."
+•	2. "Optimized Convolutional Neural Networks (CNNs) using dynamic sparsity scheduling, achieving up to 80% model compression while maintaining competitive accuracy on image classification tasks, leveraging GPU-accelerated training with NVIDIA GeForce GTX 1080 Ti and CUDA 12.3 for 3-5x faster training times."
+•	3. "Created a comprehensive Neural Network Optimization Analysis Framework, supporting training and optimization of neural networks across 10+ datasets with focus on edge device compatibility, implementing structural pruning and ONNX export for cross-platform deployment."
+•	4. "Developed LitBot, an AI-powered Literature Survey Assistant using OpenAI GPT models, providing researchers with intelligent paper search, summarization, citation management, and advanced relationship analysis capabilities."
+•	5. "Implemented innovative deep learning optimization techniques like sparsity-aware gradient computation and adaptive pruning rate adjustment, significantly improving model training efficiency and enhancing the performance of GenAI systems."
+•	6. "Conducted in-depth research on model optimization for edge devices, demonstrating the effectiveness of high-performance GPU computing for real-time applications and scalable GenAI systems."
+
+Applied Highlights
+•	1. "Distributed Real-Time Object Detection Framework: Developed a scalable, low-latency framework for real-time object detection on IoT edge nodes using Binarized Neural Networks (BNN) and a PYNQ Z1 AP-SoC wireless distributed network, achieving 19.23 frames per second performance across three nodes."
+•	2. "Dynamic Sparsity Optimization for CNNs: Implemented innovative dynamic sparsity optimization techniques on NVIDIA GeForce GTX 1080 Ti GPU, achieving up to 80% model compression while maintaining competitive accuracy on image classification tasks, contributing significantly to the field of efficient deep learning for edge devices and real-time applications."
+•	3. "Neural Network Optimization Analysis Framework: Built a comprehensive framework for analyzing, optimizing, and deploying neural networks on edge devices across multiple datasets, implementing structural pruning and multi-activation analysis techniques, and integrating ONNX export for cross-platform deployment and Edge Impulse for embedded device compatibility."
+•	4. "LitBot: AI Literature Survey Assistant: Developed an AI-powered literature survey assistant utilizing OpenAI GPT models for intelligent paper search, summarization, citation management, and advanced relationship analysis, enhancing research efficiency and insights in the AI/ML domain."
+
+Education
+Ph.D. in Computer Science, University of South Florida — Expected 2025
+•	Focus: Neural network compression, dynamic sparsity, embedded ML deployment
+M.S. in Computer Science, University of South Florida — 2020
+•	Thesis: Real-time object detection using BNNs on PYNQ-Z1 (19.23 FPS)
+B.Tech in ECE, GITAM University — 2017
+
+Patents
+•	Layer-Wise Filter Thresholding Based CNN Pruning for Efficient IoT Edge Implementations
+  Inventors: Srinivasa Katkoori, Lakshmi Kavya Kalyanam
+  US Provisional Application No. 63/552,084 | Filed: Feb 9, 2024 | USF Ref: 24T085US
+•	Unstructured Pruning for Multi-Layer Perceptrons with Tanh Activation
+  Inventors: Srinivasa Katkoori, Lakshmi Kavya Kalyanam
+  Invention ID: USF23/00331 | USF Tech ID: 24T063
+•	Range-Based Hardware Optimization of Multi-Layer Perceptrons with ReLUs
+  Inventor: Lakshmi Kavya Kalyanam (submitted via USF)
+  USF Tech Ref: 23T078US | Q&B Ref: 173738.02709

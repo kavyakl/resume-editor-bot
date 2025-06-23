@@ -1,0 +1,56 @@
+Programming Languages:
+  - Python
+  - C++
+  - CUDA
+  - Shell
+  - Embedded C
+
+AI/ML Frameworks:
+  - PyTorch
+  - TensorFlow
+  - TFLite
+  - ONNX
+  - HuggingFace Transformers
+  - scikit-learn
+
+GenAI & NLP:
+  - Retrieval-Augmented Generation (RAG)
+  - OpenAI GPT APIs
+  - FAISS
+  - Semantic Chunking
+  - NLTK
+
+Model Optimization:
+  - Structured/Unstructured Pruning
+  - Quantization
+  - QAT
+  - Dynamic Sparsity (RigL)
+  - Explainable AI (XAI)
+
+Embedded & Edge Deployment:
+  - Arduino (MKR1000/Nano)
+  - NodeMCU
+  - PYNQ-Z1
+  - Virtex-7 FPGA
+  - ONNX conversion
+  - Edge Impulse
+
+Hardware & EDA Tools:
+  - FPGA
+  - Vivado
+  - HSPICE
+  - Virtuoso
+
+Cloud & Infrastructure:
+  - Google Cloud Platform (GCP)
+  - Vertex AI
+  - Vertex AI Search
+  - Google Cloud Storage
+
+DevOps & Workflow:
+  - Git
+  - Jupyter
+  - pytest
+  - CI/CD for ML
+  - Linux Terminal
+  - MATLAB 

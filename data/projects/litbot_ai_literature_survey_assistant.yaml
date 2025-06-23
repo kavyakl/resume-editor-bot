@@ -1,0 +1,43 @@
+title: 'LitBot: AI Literature Survey Assistant'
+description: LitBot is an AI-powered literature survey assistant developed to help
+  researchers efficiently manage and analyze academic papers. The system provides
+  intelligent paper search, summarization, citation management, and advanced relationship
+  analysis with sophisticated AI/ML-specific preprocessing, semantic chunking, and
+  reference mapping capabilities.
+role: Developer
+technologies:
+- OpenAI GPT models
+- FAISS
+- PyMuPDF
+- NLTK
+- JSON
+methods:
+- AI/ML-specific preprocessing
+- semantic chunking
+- reference mapping
+- automatic metadata extraction
+- AI-generated paper summaries
+- section-based citation analysis
+- enhanced relationship analysis
+- batch processing automation
+results: null
+impact: null
+duration: null
+team_size: 1
+challenges: null
+created_at: '2025-06-22T11:52:54.479625'
+source_text: 'I developed LitBot, an AI-powered literature survey assistant that helps
+  researchers efficiently manage and analyze academic papers. The system provides
+  intelligent paper search, summarization, citation management, and advanced relationship
+  analysis with sophisticated AI/ML-specific preprocessing, semantic chunking, and
+  reference mapping capabilities. Key features include: intelligent paper search with
+  automatic metadata extraction, AI-generated paper summaries with structured output
+  for methodology, datasets, and results, comprehensive reference mapping with section-based
+  citation analysis, enhanced relationship analysis including direct citations, co-citations,
+  and bibliographic coupling, and batch processing automation for entire libraries.
+  The system uses OpenAI GPT models for summarization, FAISS for vector search, PyMuPDF
+  for PDF processing, and NLTK for text chunking. It processes papers to extract detailed
+  information including paper type, key findings, methodology, datasets, model architectures,
+  main results, limitations, and practical implications. The project includes a comprehensive
+  data management system with JSON storage, efficient caching, and robust error handling.'
+filename: litbot_ai_literature_survey_assistant

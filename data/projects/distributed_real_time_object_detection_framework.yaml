@@ -1,0 +1,43 @@
+title: Distributed Real-Time Object Detection Framework
+description: A distributed framework for real-time object detection at low frame rates
+  with IoT edge nodes was developed. The framework addresses the need for real-time
+  computer vision applications in IoT and Edge Computing domains by implementing neural
+  networks on constrained platforms. It is designed for low frame rate applications
+  where scenery is not changing rapidly.
+role: Developer
+technologies:
+- PYNQ Z1 AP-SoC
+- Neural Networks
+- IoT
+- Edge Computing
+- Wireless Distributed Network
+methods:
+- Binarized Neural Network (BNN) image classification algorithm
+- Distributed architecture
+results:
+  frames_per_second: 19.23
+  nodes: 3
+impact: The project demonstrates practical implementation of neural networks in complex
+  IoT environments with real-time performance requirements.
+duration: null
+team_size: 1
+challenges:
+  communication_latency: The communication latency is offset by the scalability offered
+    by the distributed framework.
+created_at: '2025-06-22T12:12:57.748960'
+source_text: I developed a distributed framework for real-time object detection at
+  low frame rates with IoT edge nodes, published at IEEE iSES 2020. The framework
+  addresses the need for real-time computer vision applications in IoT and Edge Computing
+  domains by implementing neural networks on constrained platforms. I employed PYNQ
+  Z1 AP-SoC (All Programmable System-on-Chip) as the IoT edge node platform and integrated
+  state-of-the-art algorithms for object detection. The distributed architecture exploits
+  the heterogeneous computing capability of the PYNQ platform and operates on a wireless
+  distributed network with minimal communication latency. The framework is designed
+  for low frame rate applications where scenery is not changing rapidly. Key achievements
+  include achieving 19.23 frames per second with three IoT nodes using Binarized Neural
+  Network (BNN) image classification algorithm, with frame rate directly proportional
+  to the number of nodes in the network. The communication latency is offset by the
+  scalability offered by the distributed framework. This work demonstrates practical
+  implementation of neural networks in complex IoT environments with real-time performance
+  requirements.
+filename: distributed_real_time_object_detection_framework
