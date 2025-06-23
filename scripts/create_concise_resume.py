@@ -70,7 +70,7 @@ def build_resume(generated_data):
     contact_p = doc.add_paragraph()
     contact_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     contact_p.add_run("Tampa, FL · +1-813-609-9796 · kavyakalyanamk@gmail.com\n")
-    contact_p.add_run("linkedin.com/in/lakshmikavya-kalyanam-a88633131 · github.com/your-github-profile") # Placeholder GitHub
+    contact_p.add_run("linkedin.com/in/lakshmikavya-kalyanam-a88633131 · github.com/kavyakl")
     add_horizontal_line(doc)
 
     # --- Objective ---
