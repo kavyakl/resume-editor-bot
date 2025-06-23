@@ -161,6 +161,16 @@ def build_resume(generated_data):
         set_run_font(p.add_run(title), bold=True)
         p.add_run(f": {detail_text}")
 
+    # --- Awards & Honors ---
+    add_section_heading(doc, "Awards & Honors")
+    awards = [
+        'Best Paper Award, IEEE iSES 2023 — "Unstructured Pruning for Multi-Layer Perceptrons with Tanh Activation"',
+        'Best Paper Award, IEEE iSES 2020 — "Distributed Real-Time Object Detection at Low Frame Rates with IoT Edge Nodes"',
+        'Judge, USF Virtual Graduate Research Symposium — 2022, 2023'
+    ]
+    for award in awards:
+        doc.add_paragraph(award, style='List Bullet')
+
     # --- Save ---
     output_path = "data/exports/Kalyanam_Resume_Final.docx"
     doc.save(output_path)
