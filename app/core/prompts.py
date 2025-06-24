@@ -231,6 +231,21 @@ SKILLS_PROMPT = PromptTemplate(template=SKILLS_PROMPT_TEMPLATE, input_variables=
 # RESUME WRITER PROMPTS (FINAL INDUSTRY-FOCUSED VERSION)
 # =================================================================================================
 
+PROJECTS_PROMPT_TEMPLATE = """
+As an expert resume writer, generate a concise and impactful "Projects" section for a resume.
+The candidate is targeting a role described as: "{job_description}".
+
+**Candidate Projects:**
+{projects}
+
+**Instructions:**
+1.  Select the top 2-3 most relevant projects for the job description.
+2.  For each project, create 2-3 bullet points highlighting key achievements, technologies used, and the impact.
+3.  Start each bullet with a strong action verb.
+4.  Use markdown for bolding the project title (e.g., **Project Title**).
+5.  Ensure the content is based strictly on the provided project details.
+"""
+
 RESEARCH_EXPERIENCE_PROMPT = PromptTemplate(
     input_variables=["projects", "job_description"],
     template="""
@@ -252,56 +267,32 @@ Synthesize the following projects into 4-5 achievement-oriented bullet points.
 - **LitBot — GenAI Literature Assistant**: Created an OpenAI-based literature analysis tool with FAISS search and semantic summarization, adopted by 10+ researchers.
 
 Generate the "Research Experience" bullet points now.
-"""
-)
 
-APPLIED_HIGHLIGHTS_PROMPT = PromptTemplate(
-    input_variables=["projects", "job_description"],
-    template="""
-As an expert resume writer, generate an "Applied Highlights" section for a PhD candidate targeting an "{job_description}" role.
-This section should showcase key, tangible projects.
+Ensure the output is clean, professional, and ready for a resume.
+""")
 
-The candidate's projects are:
-{projects}
-
-Instructions:
-1.  Select the 3-4 most impactful projects relevant to the job description.
-2.  For each project, create a single bullet point in the format: "Project Title: Brief, impactful description."
-3.  The description should highlight the core technology, method, and result.
-4.  Incorporate keywords like: GenAI, LLM, RAG, full-stack, model optimization, deployment, performance profiling.
-
-Example of a strong bullet point:
-"LLM-Enhanced Literature Analysis: Created a full-stack summarization pipeline using RAG with FAISS and OpenAI GPT, improving retrieval relevance and automating survey generation."
-
-Generate the "Applied Highlights" bullet points now.
-"""
-)
+APPLIED_HIGHLIGHTS_PROMPT = RESEARCH_EXPERIENCE_PROMPT # Re-use for now
 
 TAILORED_SKILLS_PROMPT = PromptTemplate(
-    input_variables=["job_description", "master_skills"],
+    input_variables=["projects", "master_skills", "job_description"],
     template="""
-As an expert technical recruiter, your task is to create a tailored "Technical Skills" section for a resume.
-The target role is: "{job_description}"
-The candidate's master list of all skills is:
+As an expert resume writer, create a "Technical Skills" section for a PhD candidate targeting an "{job_description}" role.
+
+**Candidate Projects (for context):**
+{projects}
+
+**Master Skill List:**
 {master_skills}
 
-Instructions:
-1.  Analyze the job description to identify the most critical skills and technologies required.
-2.  From the master skills list, select only the most relevant skills.
-3.  Organize these selected skills into the following categories:
-    - Programming Languages
-    - AI/ML Frameworks
-    - GenAI & NLP
-    - Model Optimization
-    - Embedded & Edge Deployment
-    - Hardware & EDA Tools
-    - Cloud & Infrastructure
-    - DevOps & Workflow
-4.  If a category has no relevant skills for the job, omit the category entirely.
-5.  Format the output strictly as "Category Name: Skill 1, Skill 2, Skill 3". Do not add extra text or explanations.
+**Instructions:**
+1.  Analyze the master skill list and the job description.
+2.  Organize the most relevant skills into logical categories (e.g., Programming & Frameworks, AI & Model Optimization, Embedded & Edge AI, Cloud & DevOps).
+3.  Prioritize skills mentioned in the job description and demonstrated in the projects.
+4.  Format the output as a clean, categorized list. Do not invent skills.
 
-Example Output:
-AI/ML Frameworks: PyTorch, TensorFlow, ONNX
-GenAI & NLP: RAG, FAISS, OpenAI GPT
-"""
-) 
+**Example of Final Output Format:**
+Programming & Frameworks: Python, PyTorch, TensorFlow, C++, ONNX
+AI & Model Optimization: RAG, LLMs, Quantization, Pruning, XAI
+""")
+
+PROJECTS_PROMPT = PromptTemplate(template=PROJECTS_PROMPT_TEMPLATE, input_variables=["projects", "job_description"]) 

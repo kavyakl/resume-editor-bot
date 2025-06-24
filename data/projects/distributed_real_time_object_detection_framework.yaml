@@ -1,25 +1,22 @@
 title: Distributed Real-Time Object Detection Framework
-description: A distributed framework for real-time object detection at low frame rates
-  with IoT edge nodes was developed. The framework addresses the need for real-time
-  computer vision applications in IoT and Edge Computing domains by implementing neural
-  networks on constrained platforms. It is designed for low frame rate applications
-  where scenery is not changing rapidly.
-role: Developer
+description: Built a scalable distributed system using PYNQ Z1 AP-SoCs, enabling 19.23 FPS object detection across three nodes via Binarized Neural Networks (BNNs).
+role: Lead Developer
 technologies:
 - PYNQ Z1 AP-SoC
 - Neural Networks
 - IoT
 - Edge Computing
 - Wireless Distributed Network
+- Binarized Neural Networks (BNNs)
+- Low-latency communication protocols
 methods:
 - Binarized Neural Network (BNN) image classification algorithm
 - Distributed architecture
-results:
-  frames_per_second: 19.23
-  nodes: 3
-impact: The project demonstrates practical implementation of neural networks in complex
-  IoT environments with real-time performance requirements.
-duration: null
+- Distributed task allocation
+- PYNQ-Z1 programming
+results: Achieved real-time object detection at 19.23 FPS across a distributed 3-node system, reducing communication latency and enabling real-time search for resource-constrained applications.
+impact: Enabled complex, real-time AI workloads on low-power edge infrastructure, demonstrating a scalable approach for IoT and embedded vision systems. [IEEE iSES 2020 – Best Paper]
+duration: "10 months"
 team_size: 1
 challenges:
   communication_latency: The communication latency is offset by the scalability offered

@@ -217,14 +217,14 @@ class ProjectStoreService:
             Dictionary with project statistics
         """
         try:
-            projects = self._load_all_projects()
+            projects = self.get_all_projects()
             
             if not projects:
                 return {
                     'total_projects': 0,
-                    'technologies': {},
-                    'roles': {},
-                    'avg_team_size': 0
+                    'unique_technologies': 0,
+                    'avg_duration': 'N/A',
+                    'technology_breakdown': {}
                 }
             
             # Count technologies
@@ -258,9 +258,11 @@ class ProjectStoreService:
             
             return {
                 'total_projects': len(projects),
-                'technologies': technology_counts,
+                'unique_technologies': len(technology_counts),
+                'technology_breakdown': technology_counts,
                 'roles': role_counts,
                 'avg_team_size': sum(team_sizes) / len(team_sizes) if team_sizes else 0,
+                'avg_duration': 'N/A',  # Could be enhanced to parse duration strings
                 'most_common_technologies': list(technology_counts.keys())[:5],
                 'most_common_roles': list(role_counts.keys())[:5]
             }

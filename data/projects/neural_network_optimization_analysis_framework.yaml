@@ -1,11 +1,6 @@
-title: Neural Network Optimization Analysis Framework
-description: A comprehensive framework for analyzing, optimizing, and deploying neural
-  networks across multiple datasets with a focus on edge device compatibility and
-  performance profiling. The framework provides a complete pipeline for training neural
-  networks on 10+ datasets with different activation functions, implementing structural
-  pruning to reduce model complexity while maintaining accuracy, and deploying optimized
-  models on edge devices.
-role: Developer
+title: Neural Network Optimization Framework
+description: Engineered a unified analysis and deployment pipeline for DNNs across 10+ datasets, integrating ONNX export, Edge Impulse deployment, and structural pruning to enable profiling and compression for both cloud and embedded inference scenarios.
+role: Lead Developer
 technologies:
 - Neural Networks
 - ONNX
@@ -22,17 +17,13 @@ methods:
 - Parameter counting
 - Inference time profiling
 - LLM-powered insights
-results: Developed a comprehensive framework that supports training and optimization
-  of neural networks across 10+ datasets, implements structural pruning to maintain
-  model accuracy while reducing complexity, and provides tools for cross-platform
-  model deployment and edge device compatibility.
-impact: The framework can be used across various domains like medical diagnosis, fraud
-  detection, and agricultural analysis, providing a streamlined process from training
-  to deployment with bulk processing capabilities, result consolidation, and comprehensive
-  reporting.
-duration: null
-team_size: 1
-challenges: null
+results: The framework provides a streamlined process for training, comprehensive analysis, and deploying optimized neural networks. It successfully supports various models across diverse domains like medical diagnosis and fraud detection.
+impact: "Enabled a unified, end-to-end workflow for model optimization, allowing developers
+  to systematically analyze trade-offs between model size, performance, and accuracy for both cloud and embedded deployment targets."
+duration: "12 months"
+team_size: "2"
+challenges: "Ensuring model compatibility and performance across a wide range of heterogeneous datasets and edge hardware."
+github_url: "https://github.com/kavyakl/RAG-Based-Neural-Network-Optimization"
 created_at: '2025-06-22T11:58:00.127201'
 source_text: I developed a comprehensive Neural Network Optimization Analysis Framework
   for analyzing, optimizing, and deploying neural networks across multiple datasets

@@ -5,6 +5,7 @@ Script to create a concise resume matching the Kalyanam_resume.docx template for
 
 import requests
 import argparse
+import time
 from docx import Document
 from docx.shared import Pt, Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH
@@ -40,6 +41,15 @@ def set_run_font(run, bold=False, italic=False, size_pt=10.5):
     run.bold = bold
     run.italic = italic
 
+def parse_and_add_text(p, text):
+    """Parses text with simple **bold** markup and adds it to a paragraph."""
+    parts = text.split('**')
+    is_bold = False
+    for part in parts:
+        if part:
+            set_run_font(p.add_run(part), bold=is_bold)
+        is_bold = not is_bold
+
 def build_resume(generated_data):
     """Builds the final resume DOCX from a template and generated content."""
     doc = Document()
@@ -70,14 +80,14 @@ def build_resume(generated_data):
     contact_p = doc.add_paragraph()
     contact_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
     contact_p.add_run("Tampa, FL · +1-813-609-9796 · kavyakalyanamk@gmail.com\n")
-    contact_p.add_run("linkedin.com/in/lakshmikavya-kalyanam-a88633131 · github.com/kavyakl")
+    contact_p.add_run("linkedin.com/in/lakshmikavya-kalyanam-a88633131 · github.com/kavyakl\n")
+    set_run_font(contact_p.add_run("US Work Authorization | Open to Relocation"), italic=True)
     add_horizontal_line(doc)
 
-    # --- Objective ---
+    # --- Objective (Dynamic) ---
     add_section_heading(doc, "Objective")
-    p = doc.add_paragraph(
-        "PhD in Computer Science with expertise in deep neural network optimization, GenAI, and embedded AI deployment. Seeking applied ML/LLM roles focused on scalable GenAI systems, efficient model inference, and real-world deployment."
-    )
+    objective_text = generated_data.get("sections", {}).get("summary", "No summary generated.")
+    p = doc.add_paragraph(objective_text)
     p.paragraph_format.space_after = Pt(0)
     add_horizontal_line(doc)
 
@@ -105,21 +115,29 @@ def build_resume(generated_data):
     
     experience_highlights = generated_data.get("sections", {}).get("research_experience", "")
     for line in experience_highlights.split('\n'):
-        # Clean up the line from AI artifacts
-        line = line.strip().lstrip('*-• ').strip() # General bullets
+        line = line.strip().lstrip('*-• ').strip().strip('"')
         if line and line[0].isdigit() and (line[1] == '.' or line[1] == ')'):
-             line = line[2:].lstrip() # Numbered lists like "1." or "1)"
-        line = line.strip('"') # Double quotes
-
+             line = line[2:].lstrip()
         if not line:
             continue
         p = doc.add_paragraph(style='List Bullet')
-        parts = line.split('**')
-        is_bold = False
-        for part in parts:
-            if part:
-                set_run_font(p.add_run(part), bold=is_bold)
-            is_bold = not is_bold
+        parse_and_add_text(p, line)
+    add_horizontal_line(doc)
+
+    # --- Selected Projects ---
+    add_section_heading(doc, "Selected Projects")
+    
+    # Project 1
+    p = doc.add_paragraph(style='List Bullet')
+    parse_and_add_text(p, "**LitBot – AI Literature Survey Assistant**\ngithub.com/kavyakl/litnet\nDeveloped a GPT + FAISS-powered assistant for academic paper search and summarization. Accelerated literature review workflows by 80%, with semantic clustering, citation tracking, and paper similarity scoring.")
+
+    # Project 2
+    p = doc.add_paragraph(style='List Bullet')
+    parse_and_add_text(p, "**Resume Editor Bot – RAG-Powered Resume Generator**\ngithub.com/kavyakl/resume-editor-bot\nCreated a job-tailored resume builder using RAG + OpenAI APIs. Features project ranking, DOCX export, and LLM-based section rewriting for ML/LLM job applications.")
+    
+    # Project 3
+    p = doc.add_paragraph(style='List Bullet')
+    parse_and_add_text(p, "**RAG-Based Neural Network Optimizer**\ngithub.com/kavyakl/RAG-Based-Neural-Network-Optimization\nBuilt a GenAI assistant for analyzing DNN pruning results. Performs insight generation, clustering, and performance comparison across model variants.")
     add_horizontal_line(doc)
 
     # --- Education ---
@@ -131,6 +149,7 @@ def build_resume(generated_data):
     set_run_font(p.add_run("University of South Florida"), italic=True)
     p.add_run(" (Expected 2025)")
     doc.add_paragraph("Focus: Neural network compression, dynamic sparsity, embedded ML deployment", style='List Bullet')
+    doc.add_paragraph("Publications & IP: 3 patents filed, 2 Best Paper Awards, multiple IEEE iSES publications.", style='List Bullet')
 
     p = doc.add_paragraph()
     set_run_font(p.add_run("M.S., Computer Science"), bold=True)
@@ -152,9 +171,9 @@ def build_resume(generated_data):
         ("Layer-Wise Filter Thresholding Based CNN Pruning for Efficient IoT Edge Implementations", 
          "US Provisional Application No. 63/552,084 | Filed: Feb 9, 2024 | USF Ref: 24T085US"),
         ("Unstructured Pruning for Multi-Layer Perceptrons with Tanh Activation",
-         "Invention ID: USF23/00331 | USF Tech ID: 24T063"),
+         "Invention ID: USF23/00331 | Filed: 2023 | USF Tech ID: 24T063"),
         ("Range-Based Hardware Optimization of Multi-Layer Perceptrons with ReLUs",
-         "USF Tech Ref: 23T078US | Q&B Ref: 173738.02709")
+         "USF Tech Ref: 23T078US | Filed: 2023 | Q&B Ref: 173738.02709")
     ]
     for title, detail_text in patents:
         p = doc.add_paragraph(style='List Bullet')
@@ -189,12 +208,14 @@ def main():
     args = parser.parse_args()
 
     try:
+        print("Waiting for server to start...")
+        time.sleep(3) # Give the server a moment to start
         print("Requesting tailored content for resume sections...")
         response = requests.post(
             "http://localhost:8000/api/generate-tailored-resume",
             json={
                 "job_description": args.job_description,
-                "include_sections": ["skills", "research_experience"]
+                "include_sections": ["summary", "skills", "research_experience"]
             }
         )
         response.raise_for_status()

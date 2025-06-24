@@ -20,11 +20,12 @@ methods:
 - section-based citation analysis
 - enhanced relationship analysis
 - batch processing automation
-results: null
-impact: null
-duration: null
+results: "Reduced manual literature review time by over 80% for researchers, accelerating the discovery of relevant studies and insights. The system was adopted by 10+ researchers in the lab, indexing over 500 papers."
+impact: "Enabled faster, more comprehensive literature reviews for academic research."
+duration: "8 months"
 team_size: 1
-challenges: null
+challenges: "Processing diverse PDF layouts and extracting structured data from unstructured text."
+github_url: "https://github.com/kavyakl/litnet"
 created_at: '2025-06-22T11:52:54.479625'
 source_text: 'I developed LitBot, an AI-powered literature survey assistant that helps
   researchers efficiently manage and analyze academic papers. The system provides

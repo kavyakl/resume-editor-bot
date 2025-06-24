@@ -184,25 +184,80 @@ async def export_resume(request: ExportRequest):
 @router.post("/use-existing-resume")
 async def use_existing_resume():
     try:
-        # Use the existing resume file
+        # Use the existing resume file if it exists
         resume_path = "Kalyanam_resume.docx"
-        if not os.path.exists(resume_path):
-            raise HTTPException(
-                status_code=404,
-                detail="Resume file not found"
-            )
+        if os.path.exists(resume_path):
+            # Parse existing resume
+            parsed_resume = resume_parser_service.parse_docx(resume_path)
             
-        # Parse resume
-        parsed_resume = resume_parser_service.parse_docx(resume_path)
-        
-        # Create vector store
-        await rag_service.create_vector_store(parsed_resume)
-        
-        return {
-            "status": "success",
-            "message": "Resume processed successfully",
-            "parsed_data": parsed_resume
-        }
+            # Create vector store
+            await rag_service.create_vector_store(parsed_resume)
+            
+            return {
+                "status": "success",
+                "message": "Resume processed successfully",
+                "parsed_data": parsed_resume
+            }
+        else:
+            # Provide default resume structure when no file exists
+            default_resume = {
+                "name": "Lakshmi Kavya Kalyanam",
+                "contact": {
+                    "email": "kavyakalyanamk@gmail.com",
+                    "phone": "+1-813-609-9796",
+                    "location": "Tampa, FL",
+                    "linkedin": "linkedin.com/in/lakshmikavya-kalyanam-a88633131"
+                },
+                "sections": {
+                    "summary": "PhD in Computer Science with expertise in neural network optimization, GenAI pipelines, and embedded ML deployment. Seeking Applied Scientist roles focused on scalable ML systems, search ranking models, reinforcement learning, and real-world deployment on large-scale infrastructure.",
+                    "skills": "Programming Languages: Python, C++, CUDA, Verilog\nMachine Learning: PyTorch, TensorFlow, ONNX, Scikit-learn\nDeep Learning: Neural Networks, Computer Vision, NLP\nOptimization: Model Pruning, Quantization, Edge Deployment\nTools & Platforms: Docker, AWS, Git, Linux\nHardware: FPGA, Embedded Systems, IoT Devices",
+                    "experience": [
+                        {
+                            "title": "PhD Researcher",
+                            "company": "University of South Florida",
+                            "duration": "2019 - Present",
+                            "description": [
+                                "Researching neural network optimization and dynamic sparsity techniques",
+                                "Developing embedded ML deployment solutions for edge devices",
+                                "Publishing in top-tier conferences and filing patents"
+                            ]
+                        }
+                    ],
+                    "education": [
+                        {
+                            "degree": "Ph.D., Computer Science",
+                            "institution": "University of South Florida",
+                            "duration": "Expected 2025",
+                            "details": ["Focus: Neural network compression, dynamic sparsity, embedded ML deployment"]
+                        },
+                        {
+                            "degree": "M.S., Computer Science", 
+                            "institution": "University of South Florida",
+                            "duration": "2020",
+                            "details": ["Thesis: Real-time object detection using BNNs on PYNQ-Z1"]
+                        }
+                    ],
+                    "projects": [
+                        {
+                            "title": "LitBot – AI Literature Survey Assistant",
+                            "description": ["Developed GPT + FAISS-powered assistant for academic paper search and summarization", "Accelerated literature review workflows by 80%"]
+                        },
+                        {
+                            "title": "Resume Editor Bot – RAG-Powered Resume Generator", 
+                            "description": ["Created job-tailored resume builder using RAG + OpenAI APIs", "Features project ranking, DOCX export, and LLM-based section rewriting"]
+                        }
+                    ]
+                }
+            }
+            
+            # Create vector store from default resume
+            await rag_service.create_vector_store(default_resume)
+            
+            return {
+                "status": "success", 
+                "message": "Using default resume structure (no file found)",
+                "parsed_data": default_resume
+            }
             
     except ValueError as ve:
         raise HTTPException(status_code=400, detail=str(ve))
@@ -229,7 +284,7 @@ async def parse_project_dump(request: ProjectDumpRequest):
 async def get_all_projects():
     """Get all stored projects."""
     try:
-        projects = project_store_service.load_all_projects()
+        projects = project_store_service.get_all_projects()
         return {"projects": projects, "count": len(projects)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

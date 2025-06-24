@@ -10,6 +10,7 @@ from app.core.prompts import (
     EXPERIENCE_PROMPT,
     SKILLS_PROMPT,
     RESEARCH_EXPERIENCE_PROMPT,
+    PROJECTS_PROMPT,
     APPLIED_HIGHLIGHTS_PROMPT,
     TAILORED_SKILLS_PROMPT
 )
@@ -212,55 +213,7 @@ class ResumeWriterService:
     async def _generate_summary_section(self, projects: List[Dict[str, Any]], 
                                       job_description: str) -> str:
         """Generate a professional summary based on projects and job requirements."""
-        try:
-            # Parse job description
-            job_data = await self.job_parser.parse_job_description(job_description)
-            
-            # Get key project highlights
-            top_projects = projects[:3]
-            key_technologies = set()
-            key_results = []
-            
-            for project in top_projects:
-                technologies = project.get("technologies", [])
-                key_technologies.update(technologies)
-                
-                if project.get("results"):
-                    key_results.append(project["results"])
-            
-            prompt = ChatPromptTemplate.from_messages([
-                ("system", """You are an expert resume writer. Create a compelling professional summary that:
-                1. Highlights relevant experience and expertise
-                2. Emphasizes key technologies and skills
-                3. Mentions quantifiable achievements
-                4. Aligns with the job requirements
-                5. Is concise (2-3 sentences) but impactful
-                6. Uses professional language and tone
-                
-                Create a summary that positions the candidate as an ideal fit for the role."""),
-                ("user", """Job Title: {job_title}
-                Industry Focus: {industry_focus}
-                Required Skills: {required_skills}
-                Key Technologies: {key_technologies}
-                Key Achievements: {key_achievements}
-                
-                Create a professional summary that showcases the candidate's relevant experience for this role.""")
-            ])
-            
-            chain = prompt | self.llm
-            
-            response = await chain.ainvoke({
-                "job_title": job_data.get("job_title", ""),
-                "industry_focus": job_data.get("industry_focus", ""),
-                "required_skills": ", ".join([str(s) for s in job_data.get("required_skills", []) if not isinstance(s, dict)]),
-                "key_technologies": ", ".join([str(t) for t in key_technologies if not isinstance(t, dict)]),
-                "key_achievements": "; ".join([str(r) for r in key_results[:3] if not isinstance(r, dict)])
-            })
-            
-            return response.content
-            
-        except Exception as e:
-            raise ValueError(f"Error generating summary section: {str(e)}")
+        return "PhD in Computer Science with expertise in neural network optimization, GenAI pipelines, and embedded ML deployment. Seeking Applied Scientist roles focused on scalable ML systems, search ranking models, reinforcement learning, and real-world deployment on large-scale infrastructure."
 
     def generate_tailored_resume(self, job_description: str, include_sections: list[str]) -> dict:
         """
@@ -284,9 +237,13 @@ class ResumeWriterService:
         """
         Uses the appropriate prompt and LLMChain to generate section content.
         """
+        if section_type == "summary":
+            return "PhD in Computer Science with expertise in neural network optimization, GenAI pipelines, and embedded ML deployment. Seeking Applied Scientist roles focused on scalable ML systems, search ranking models, reinforcement learning, and real-world deployment on large-scale infrastructure."
+
         prompts = {
             "research_experience": RESEARCH_EXPERIENCE_PROMPT,
             "skills": TAILORED_SKILLS_PROMPT,
+            "projects": PROJECTS_PROMPT,
         }
         
         prompt = prompts.get(section_type)

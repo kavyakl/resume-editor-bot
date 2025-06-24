@@ -1,39 +1,11 @@
-Programming Languages:
-  - Python
-  - C++
-  - CUDA
-  - Shell
-  - Embedded C
-
-AI/ML Frameworks:
-  - PyTorch
-  - TensorFlow
-  - TFLite
-  - ONNX
-  - HuggingFace Transformers
-  - scikit-learn
-
-GenAI & NLP:
-  - Retrieval-Augmented Generation (RAG)
-  - OpenAI GPT APIs
-  - FAISS
-  - Semantic Chunking
-  - NLTK
-
-Model Optimization:
-  - Structured/Unstructured Pruning
-  - Quantization
-  - QAT
-  - Dynamic Sparsity (RigL)
-  - Explainable AI (XAI)
-
-Embedded & Edge Deployment:
-  - Arduino (MKR1000/Nano)
-  - NodeMCU
-  - PYNQ-Z1
-  - Virtex-7 FPGA
-  - ONNX conversion
-  - Edge Impulse
+Programming & Tools: Python, C++, CUDA, Git, Docker, Unix/Linux
+AI/ML Frameworks: PyTorch, TensorFlow, ONNX, scikit-learn, TFLite
+GenAI & NLP: OpenAI GPT APIs, Retrieval-Augmented Generation (RAG), FAISS, NLTK, PyMuPDF
+Optimization Techniques: Structured/Unstructured Pruning, Quantization, QAT, Dynamic Sparsity (RigL), XAI
+Search & Ranking Systems: Vector Search (FAISS), Custom Ranking Pipelines, Semantic Chunking
+Embedded & Edge AI: PYNQ-Z1, Arduino, Edge Impulse, Embedded C, ONNX export
+Distributed & Cloud Computing: GCP, Vertex AI, Parallel Training, CI/CD for ML, Model Benchmarking
+Additional: Reinforcement Learning (exploration-based pruning), Java, Data Mining
 
 Hardware & EDA Tools:
   - FPGA
@@ -46,6 +18,7 @@ Cloud & Infrastructure:
   - Vertex AI
   - Vertex AI Search
   - Google Cloud Storage
+  - Docker
 
 DevOps & Workflow:
   - Git
