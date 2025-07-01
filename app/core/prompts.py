@@ -200,11 +200,11 @@ Use the following projects as the primary source of experience:
 {projects}
 
 Instructions:
-- Start each bullet point with a strong action verb (e.g., "Engineered," "Architected," "Accelerated").
-- Quantify results wherever possible (e.g., "reduced model size by 80%," "achieved 3-5x speedup").
-- Focus on the impact and outcomes of the work.
-- Directly address skills and requirements mentioned in the job description.
-- Do not invent new information; base the highlights strictly on the provided project details.
+- Each bullet should start with a strong action verb.
+- Include quantifiable results and metrics.
+- Highlight technical skills and methodologies.
+- Focus on impact and innovation.
+- Align with the target job requirements.
 """
 
 SKILLS_PROMPT_TEMPLATE = """
@@ -295,4 +295,38 @@ Programming & Frameworks: Python, PyTorch, TensorFlow, C++, ONNX
 AI & Model Optimization: RAG, LLMs, Quantization, Pruning, XAI
 """)
 
-PROJECTS_PROMPT = PromptTemplate(template=PROJECTS_PROMPT_TEMPLATE, input_variables=["projects", "job_description"]) 
+PROJECTS_PROMPT = PromptTemplate(template=PROJECTS_PROMPT_TEMPLATE, input_variables=["projects", "job_description"])
+
+# Cover Letter Generation Prompt
+COVER_LETTER_PROMPT_TEMPLATE = """
+You are a cover letter generator. Using the candidate's resume data and a given job description, write a personalized, impactful, one-page cover letter in a professional tone.
+
+{{ candidate_name }} is applying for the role of {{ job_title }} at {{ company_name }}.
+
+Resume Summary:
+{{ summary }}
+
+Top Skills:
+{{ skills | join(", ") }}
+
+Top Projects:
+{% for project in projects %}
+- {{ project.title }}: {{ project.results }} (Tech: {{ project.technologies | join(", ") }})
+{% endfor %}
+
+Write the cover letter referencing the most relevant projects and skills based on the job description below:
+
+{{ job_description }}
+
+Instructions:
+1. Start with a strong opening that shows enthusiasm for the specific role and company
+2. Connect your background directly to the job requirements
+3. Highlight 2-3 most relevant projects with specific achievements
+4. Show understanding of the company's mission/values if mentioned
+5. End with a confident closing that invites further discussion
+6. Keep it to one page (approximately 300-400 words)
+7. Use a professional but warm tone
+8. Include contact information at the end
+
+Format the cover letter as a professional business letter with proper salutation and closing.
+""" 

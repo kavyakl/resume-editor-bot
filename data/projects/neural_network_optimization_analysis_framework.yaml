@@ -1,4 +1,5 @@
 title: Neural Network Optimization Framework
+slug: neural-network-optimization-framework
 description: Engineered a unified analysis and deployment pipeline for DNNs across 10+ datasets, integrating ONNX export, Edge Impulse deployment, and structural pruning to enable profiling and compression for both cloud and embedded inference scenarios.
 role: Lead Developer
 technologies:
@@ -25,6 +26,9 @@ team_size: "2"
 challenges: "Ensuring model compatibility and performance across a wide range of heterogeneous datasets and edge hardware."
 github_url: "https://github.com/kavyakl/RAG-Based-Neural-Network-Optimization"
 created_at: '2025-06-22T11:58:00.127201'
+sections: ["research", "project"]
+relevance_tags: ["ml", "optimization", "edge-ai", "onnx", "pruning", "deployment", "research"]
+featured: true
 source_text: I developed a comprehensive Neural Network Optimization Analysis Framework
   for analyzing, optimizing, and deploying neural networks across multiple datasets
   with focus on edge device compatibility and performance profiling. The framework

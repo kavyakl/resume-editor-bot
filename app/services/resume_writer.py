@@ -3,7 +3,7 @@ from langchain.prompts import ChatPromptTemplate
 from app.core.config import settings
 from app.services.relevance_ranker import RelevanceRanker
 from app.core.job_parser import JobParserService
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List, Optional, Set
 import json
 from app.core.prompts import (
     SUMMARY_PROMPT,
@@ -31,6 +31,297 @@ class ResumeWriterService:
         self.relevance_ranker = RelevanceRanker()
         self.job_parser = JobParserService()
         self.project_store = project_store
+
+    def select_relevant_projects(self, projects: List[Dict[str, Any]], job_tags: List[str], 
+                               target_section: str, used_project_slugs: Set[str], 
+                               max_count: int = 5) -> List[Dict[str, Any]]:
+        """
+        Select relevant projects for a specific section with deduplication.
+        
+        Args:
+            projects: List of all available projects
+            job_tags: Tags extracted from job description
+            target_section: Target section ("research", "project", "experience")
+            used_project_slugs: Set of project slugs already used in other sections
+            max_count: Maximum number of projects to return
+            
+        Returns:
+            List of selected projects for the section
+        """
+        try:
+            print(f"[DEBUG] select_relevant_projects called for section: {target_section}")
+            print(f"[DEBUG] job_tags: {job_tags}")
+            print(f"[DEBUG] total projects available: {len(projects)}")
+            print(f"[DEBUG] used_project_slugs: {used_project_slugs}")
+            
+            # Filter projects by relevance tags and section compatibility
+            filtered_projects = []
+            for project in projects:
+                # Skip if already used in another section
+                if project.get('slug') in used_project_slugs:
+                    print(f"[DEBUG] Skipping {project.get('title')} - already used")
+                    continue
+                
+                # Check if project is compatible with target section
+                project_sections = project.get('sections', [])
+                if target_section not in project_sections:
+                    print(f"[DEBUG] Skipping {project.get('title')} - not compatible with section {target_section} (has: {project_sections})")
+                    continue
+                
+                # Check relevance tags overlap
+                project_tags = project.get('relevance_tags', [])
+                if not set(project_tags).intersection(set(job_tags)):
+                    print(f"[DEBUG] Skipping {project.get('title')} - no tag overlap (project tags: {project_tags}, job tags: {job_tags})")
+                    continue
+                
+                print(f"[DEBUG] Including {project.get('title')} - matches criteria")
+                filtered_projects.append(project)
+            
+            print(f"[DEBUG] filtered_projects count: {len(filtered_projects)}")
+            
+            # Sort by featured status first, then by relevance
+            featured_projects = [p for p in filtered_projects if p.get('featured', False)]
+            other_projects = [p for p in filtered_projects if not p.get('featured', False)]
+            
+            # Combine featured and other projects, prioritizing featured ones
+            ranked_projects = featured_projects + other_projects
+            
+            # Return top projects up to max_count
+            selected_projects = ranked_projects[:max_count]
+            
+            print(f"[DEBUG] selected_projects count: {len(selected_projects)}")
+            for project in selected_projects:
+                print(f"[DEBUG] Selected: {project.get('title')}")
+            
+            # Update used project slugs
+            for project in selected_projects:
+                used_project_slugs.add(project.get('slug'))
+            
+            return selected_projects
+            
+        except Exception as e:
+            raise ValueError(f"Error selecting relevant projects: {str(e)}")
+
+    async def generate_tailored_resume_with_deduplication(self, job_description: str, 
+                                                        include_sections: List[str],
+                                                        candidate_skills: List[str] = None,
+                                                        max_projects_per_section: int = 4) -> Dict[str, Any]:
+        """
+        Generate a tailored resume with intelligent project deduplication.
+        
+        Args:
+            job_description: Job description text
+            include_sections: List of sections to include
+            candidate_skills: Optional list of candidate skills
+            
+        Returns:
+            Dictionary containing generated resume sections
+        """
+        print("[DEBUG] Starting resume generation (deduplication)...")
+        try:
+            # Parse job description once and cache the result
+            job_data = await self.job_parser.parse_job_description(job_description)
+            print("[DEBUG] job_data returned:", job_data)
+            if job_data is None:
+                print("[ERROR] job_data is None! Check job description parsing.")
+                job_data = {}
+            job_tags = []
+            
+            # Extract tags from required and preferred skills
+            for skill in job_data.get("required_skills", []):
+                job_tags.extend(self._extract_tags_from_skill(skill))
+            for skill in job_data.get("preferred_skills", []):
+                job_tags.extend(self._extract_tags_from_skill(skill))
+            
+            # Add industry-specific tags
+            industry_focus = (job_data.get("industry_focus") or "").lower()
+            if "ml" in industry_focus or "machine learning" in industry_focus:
+                job_tags.extend(["ml", "ai", "deep-learning"])
+            if "edge" in industry_focus or "embedded" in industry_focus:
+                job_tags.extend(["edge-ai", "embedded", "iot"])
+            if "computer vision" in industry_focus:
+                job_tags.extend(["computer-vision", "image-processing"])
+            if "nlp" in industry_focus or "natural language" in industry_focus:
+                job_tags.extend(["nlp", "text-processing"])
+            
+            # Remove duplicates and normalize
+            job_tags = list(set([tag.lower() for tag in job_tags]))
+            
+            # Get all projects
+            all_projects = self.project_store.get_all_projects()
+            
+            # Track used project slugs to avoid duplication
+            used_project_slugs = set()
+            
+            # Generate sections with deduplication - use cached job_data
+            resume_sections = {}
+            
+            for section in include_sections:
+                if section == "summary":
+                    # Summary doesn't need specific projects
+                    resume_sections["summary"] = await self._generate_summary_section_optimized(all_projects, job_description, job_data)
+                elif section == "research":
+                    # Select research projects
+                    research_projects = self.select_relevant_projects(
+                        all_projects, job_tags, "research", used_project_slugs, max_count=max_projects_per_section
+                    )
+                    resume_sections["research"] = await self._generate_research_section_optimized(job_description, research_projects, job_data)
+                elif section == "projects":
+                    # Select project section projects (allow some overlap with research for comprehensive coverage)
+                    project_projects = self.select_relevant_projects(
+                        all_projects, job_tags, "project", set(), max_count=max_projects_per_section * 2  # Allow more projects
+                    )
+                    resume_sections["projects"] = await self._generate_projects_section_optimized(job_description, project_projects, job_data)
+                elif section == "experience":
+                    # Experience can use any projects not yet used
+                    experience_projects = self.select_relevant_projects(
+                        all_projects, job_tags, "project", used_project_slugs, max_count=max_projects_per_section
+                    )
+                    resume_sections["experience"] = await self._generate_experience_section_optimized(job_description, experience_projects, job_data)
+                elif section == "skills":
+                    # Skills section doesn't need specific projects
+                    print(f"[DEBUG] Generating skills section with {len(all_projects)} projects")
+                    skills_section = await self._generate_skills_section_optimized(all_projects, job_description, job_data)
+                    print(f"[DEBUG] Skills section generated: {skills_section[:200]}...")  # Show first 200 chars
+                    resume_sections["skills"] = skills_section
+            
+            print("[DEBUG] Resume generation succeeded!")
+            return {
+                "sections": resume_sections,
+                "job_analysis": job_data,
+                "selected_projects_count": len(used_project_slugs),
+                "deduplication_applied": True
+            }
+            
+        except Exception as e:
+            import traceback
+            print("[ERROR] Resume generation failed:", str(e))
+            print(traceback.format_exc())
+            raise
+
+    def _extract_tags_from_skill(self, skill: str) -> List[str]:
+        """Extract relevant tags from a skill string."""
+        skill_lower = skill.lower()
+        tags = []
+        
+        # Map common skills to tags
+        skill_to_tags = {
+            "python": ["python", "programming"],
+            "pytorch": ["pytorch", "ml", "deep-learning"],
+            "tensorflow": ["tensorflow", "ml", "deep-learning"],
+            "onnx": ["onnx", "ml", "optimization"],
+            "cuda": ["cuda", "gpu", "parallel-computing"],
+            "docker": ["docker", "containerization"],
+            "fastapi": ["fastapi", "web-app", "api"],
+            "streamlit": ["streamlit", "web-app", "ui"],
+            "openai": ["openai", "genai", "llm"],
+            "langchain": ["langchain", "genai", "rag"],
+            "faiss": ["faiss", "vector-search", "rag"],
+            "edge": ["edge-ai", "embedded"],
+            "iot": ["iot", "embedded"],
+            "computer vision": ["computer-vision", "image-processing"],
+            "nlp": ["nlp", "text-processing"],
+            "pruning": ["pruning", "optimization"],
+            "quantization": ["quantization", "optimization"],
+            "distributed": ["distributed-systems"],
+            "real-time": ["real-time"],
+            "research": ["research", "academic"]
+        }
+        
+        for skill_key, tag_list in skill_to_tags.items():
+            if skill_key in skill_lower:
+                tags.extend(tag_list)
+        
+        return tags
+
+    async def _generate_research_section_optimized(self, job_description: str, projects: List[Dict[str, Any]], job_data: Dict[str, Any]) -> str:
+        """Generate research experience section with academic focus (optimized version)."""
+        try:
+            print(f"[DEBUG] _generate_research_section_optimized called with {len(projects)} projects")
+            print(f"[DEBUG] projects: {[p.get('title', 'No title') for p in projects]}")
+            
+            # Start with basic research experience header (no duplicate)
+            research_section = "Research Experience\nPhD Researcher, University of South Florida — Tampa, FL\n2019 – Present\n\n"
+            
+            # Create research project descriptions
+            research_descriptions = []
+            for i, project in enumerate(projects[:4]):  # Top 4 research projects
+                desc = f"Research {i+1}: {project.get('title', '')}\n"
+                desc += f"Role: {project.get('role', '')}\n"
+                desc += f"Technologies: {', '.join(project.get('technologies', []))}\n"
+                desc += f"Methods: {project.get('methods', '')}\n"
+                desc += f"Results: {project.get('results', '')}\n"
+                desc += f"Impact: {project.get('impact', '')}\n"
+                desc += f"Duration: {project.get('duration', '')}\n"
+                research_descriptions.append(desc)
+            
+            print(f"[DEBUG] research_descriptions count: {len(research_descriptions)}")
+            
+            if not research_descriptions:
+                print("[DEBUG] No research descriptions - returning basic header")
+                return research_section + "Conducted research in neural network optimization and edge AI deployment."
+            
+            prompt = ChatPromptTemplate.from_messages([
+                ("system", """You are an expert academic resume writer. Create a concise, impactful research experience section that:
+                1. Highlights key technical contributions and innovations
+                2. Emphasizes quantifiable results and measurable impact
+                3. Uses strong action verbs and technical precision
+                4. Focuses on research outcomes and field contributions
+                5. Follows professional resume formatting (not academic CV)
+                6. Creates tight, scannable bullet points for each research project
+                7. Removes redundancy and wordiness
+                8. Uses active, resume-style language (not paper abstract style)
+                9. Uses consistent past tense for completed work
+                10. Provides specific metrics and percentages
+                
+                Format as concise research project descriptions with clear project titles and impactful bullet points.
+                DO NOT include the basic header (Research Experience, PhD Researcher, etc.) as that will be added separately.
+                
+                For each research project, create 2-3 tight bullet points that highlight:
+                - Action + Method + Result (in ~2 lines)
+                - Quantifiable impact and technical achievements
+                - Publications, patents, or awards if applicable
+                
+                Avoid verbose descriptions, abstract-style language, or phrases like "The research outcome offers..."
+                Use active language: "Compressed CNNs by 80%" not "Successfully achieved up to 80% model compression"
+                Use tight phrasing: "achieving 80% CNN model compression" not "resulting in up to 80% model compression of CNNs"
+                Include specific metrics: inference speedup, accuracy improvements, deployment efficiency
+                Hiring managers skim - make each bullet count."""),
+                ("user", """Job Title: {job_title}
+                Industry Focus: {industry_focus}
+                Required Skills: {required_skills}
+                
+                Research Projects:
+                {research_descriptions}
+                
+                Create concise, impactful research project descriptions that showcase these projects for this role. 
+                Focus on action + method + result in tight, scannable bullet points.
+                Use active, resume-style language throughout.
+                
+                For each project, emphasize:
+                - Specific technical achievements and innovations
+                - Quantifiable results (percentages, speedups, efficiency gains)
+                - Real-world impact and applications
+                - Technical depth and complexity handled
+                
+                Use consistent past tense and avoid redundant phrases.""")
+            ])
+            
+            chain = prompt | self.llm
+            
+            response = await chain.ainvoke({
+                "job_title": job_data.get("job_title", ""),
+                "industry_focus": job_data.get("industry_focus", ""),
+                "required_skills": ", ".join(job_data.get("required_skills", [])),
+                "research_descriptions": "\n\n".join(research_descriptions)
+            })
+            
+            print(f"[DEBUG] Research section generated successfully")
+            return research_section + response.content
+            
+        except Exception as e:
+            print(f"[ERROR] Error in _generate_research_section_optimized: {str(e)}")
+            raise ValueError(f"Error generating research section: {str(e)}")
 
     async def generate_resume_section(self, section_type: str, job_description: str, projects: List[Dict[str, Any]], 
                                     candidate_skills: List[str] = None) -> str:
@@ -61,12 +352,9 @@ class ResumeWriterService:
         except Exception as e:
             raise ValueError(f"Error generating resume section: {str(e)}")
 
-    async def _generate_experience_section(self, job_description: str, projects: List[Dict[str, Any]]) -> str:
-        """Generate experience section with project-based bullet points."""
+    async def _generate_experience_section_optimized(self, job_description: str, projects: List[Dict[str, Any]], job_data: Dict[str, Any]) -> str:
+        """Generate experience section with project-based bullet points (optimized version)."""
         try:
-            # Parse job description
-            job_data = await self.job_parser.parse_job_description(job_description)
-            
             # Create project descriptions for the prompt
             project_descriptions = []
             for i, project in enumerate(projects[:5]):  # Top 5 projects
@@ -110,15 +398,12 @@ class ResumeWriterService:
         except Exception as e:
             raise ValueError(f"Error generating experience section: {str(e)}")
 
-    async def _generate_projects_section(self, job_description: str, projects: List[Dict[str, Any]]) -> str:
-        """Generate projects section with detailed project descriptions."""
+    async def _generate_projects_section_optimized(self, job_description: str, projects: List[Dict[str, Any]], job_data: Dict[str, Any]) -> str:
+        """Generate projects section with detailed project descriptions (optimized version)."""
         try:
-            # Parse job description
-            job_data = await self.job_parser.parse_job_description(job_description)
-            
             # Create detailed project descriptions
             project_details = []
-            for i, project in enumerate(projects[:6]):  # Top 6 projects
+            for i, project in enumerate(projects[:8]):  # Top 8 projects for more comprehensive coverage
                 detail = f"Project {i+1}: {project.get('title', '')}\n"
                 detail += f"Description: {project.get('description', '')}\n"
                 detail += f"Role: {project.get('role', '')}\n"
@@ -130,14 +415,24 @@ class ResumeWriterService:
                 project_details.append(detail)
             
             prompt = ChatPromptTemplate.from_messages([
-                ("system", """You are an expert resume writer. Create a compelling projects section that:
+                ("system", """You are an expert resume writer. Create a sharp, impactful projects section that:
                 1. Showcases the most relevant projects for the job
-                2. Provides detailed but concise project descriptions
-                3. Emphasizes technical skills and methodologies
-                4. Highlights quantifiable results and impact
+                2. Provides concise, action-driven project descriptions
+                3. Emphasizes technical skills and quantifiable results
+                4. Uses product launch-style phrasing (e.g., "Developed X that achieved Y")
                 5. Uses professional formatting with clear project titles and bullet points
+                6. Avoids repetition with research experience section
+                7. Cross-references research projects briefly if they appear in both sections
                 
-                Format each project with a clear title and 3-4 bullet points highlighting key aspects."""),
+                Format each project with a clear title and 2-3 impactful bullet points.
+                Focus on: Action + Technology + Result + Impact
+                Use phrases like "Developed", "Built", "Created" followed by specific outcomes.
+                
+                If a project was already described in Research Experience, use cross-reference format:
+                "Project Name - See Research Experience
+                Brief description focusing on different aspects or additional outcomes"
+                
+                Avoid duplicating detailed descriptions from the Research section."""),
                 ("user", """Job Title: {job_title}
                 Industry Focus: {industry_focus}
                 Required Skills: {required_skills}
@@ -145,7 +440,9 @@ class ResumeWriterService:
                 Project Details:
                 {project_details}
                 
-                Create a professional projects section that best showcases these projects for this role.""")
+                Create a sharp, impactful projects section that best showcases these projects for this role.
+                Focus on action + technology + result in concise bullet points.
+                Avoid repetition with Research Experience section.""")
             ])
             
             chain = prompt | self.llm
@@ -162,12 +459,11 @@ class ResumeWriterService:
         except Exception as e:
             raise ValueError(f"Error generating projects section: {str(e)}")
 
-    async def _generate_skills_section(self, projects: List[Dict[str, Any]], 
-                                     job_description: str) -> str:
-        """Generate skills section based on project technologies and job requirements."""
+    async def _generate_skills_section_optimized(self, projects: List[Dict[str, Any]], 
+                                     job_description: str, job_data: Dict[str, Any]) -> str:
+        """Generate skills section based on project technologies and job requirements (optimized version)."""
         try:
-            # Parse job description
-            job_data = await self.job_parser.parse_job_description(job_description)
+            print(f"[DEBUG] _generate_skills_section_optimized called with {len(projects)} projects")
             
             # Extract skills from projects
             project_skills = set()
@@ -175,45 +471,238 @@ class ResumeWriterService:
                 technologies = project.get("technologies", [])
                 project_skills.update(technologies)
             
+            print(f"[DEBUG] Extracted {len(project_skills)} unique skills from projects: {list(project_skills)[:10]}...")
+            
             # Get job requirements
             required_skills = job_data.get("required_skills", [])
             preferred_skills = job_data.get("preferred_skills", [])
             
+            # Get master skills from project store for comprehensive coverage
+            master_skills_text = self.project_store.get_master_skills_as_text()
+            
+            # Create a comprehensive skills list from multiple sources
+            all_skills = set()
+            
+            # Add project skills
+            all_skills.update(project_skills)
+            
+            # Add required and preferred skills from job
+            all_skills.update(required_skills)
+            all_skills.update(preferred_skills)
+            
+            # Add skills from master skills database
+            if master_skills_text:
+                # Parse master skills text to extract individual skills
+                lines = master_skills_text.split('\n')
+                for line in lines:
+                    if ':' in line:
+                        skills_part = line.split(':', 1)[1].strip()
+                        skills = [s.strip() for s in skills_part.split(',')]
+                        all_skills.update(skills)
+            
+            # Remove empty strings and normalize
+            all_skills = {skill.strip() for skill in all_skills if skill.strip()}
+            
+            print(f"[DEBUG] Total unique skills collected: {len(all_skills)}")
+            
+            # Create a fallback skills section if LLM fails
+            fallback_skills = self._create_fallback_skills_section(all_skills, required_skills, preferred_skills)
+            
+            try:
+                prompt = ChatPromptTemplate.from_messages([
+                    ("system", """You are an expert resume writer. Create a concise, job-tailored skills section that:
+                    1. Prioritizes skills mentioned in the job requirements
+                    2. Groups skills into 4-6 logical, recruiter-friendly categories
+                    3. Uses clean formatting with consistent separators (e.g., "Languages:", "Frameworks:", "Tools:")
+                    4. Focuses on the most relevant skills for the position
+                    5. Includes expanded acronyms for ATS optimization (e.g., "Deep Neural Networks (DNNs)")
+                    6. Eliminates redundancy and keeps each category concise
+                    7. Avoids overlapping categories
+                    8. Uses specific hardware descriptions (e.g., "NVIDIA GeForce GTX 1080 Ti (11 GB)")
+                    
+                    IMPORTANT: Format each category as:
+                    **Languages:** Python, C++
+                    **Frameworks:** PyTorch 2.1.2, ONNX, FastAPI, Pydantic
+                    **Tools:** Git, CUDA 12.3, Edge Impulse, LangChain, python-docx, PyMuPDF, JSON
+                    **AI/ML:** Binarized Neural Networks (BNNs), Convolutional Neural Networks (CNNs), OpenAI GPT Models, LLM Fine-tuning, RAG Pipelines, Model Compression, Dynamic Pruning
+                    **Optimization Techniques:** Sparsity Optimization, Structured/Unstructured Pruning, Quantization, RigL-based Dynamic Sparsity
+                    **Hardware & Protocols:** NVIDIA GeForce GTX 1080 Ti (11 GB), PYNQ Z1 AP-SoC, Arduino, Low-latency Protocols, IoT, Edge Devices
+                    
+                    Use consistent formatting with colons and commas. No bullet points.
+                    Do NOT write descriptions or explanations. Just list the skills.
+                    Do NOT use phrases like "Proficient in" or "Experience with" - just the skill names.
+                    Group related skills together and avoid creating too many categories."""),
+                    ("user", """Job Title: {job_title}
+                    Required Skills: {required_skills}
+                    Preferred Skills: {preferred_skills}
+                    Available Skills: {available_skills}
+                    
+                    Create a professional, ATS-optimized skills section that best matches the job requirements. 
+                    Use 4-6 categories maximum and avoid redundancy.
+                    Format exactly as shown in the system prompt with **Category:** skill1, skill2 format.""")
+                ])
+                
+                chain = prompt | self.llm
+                
+                response = await chain.ainvoke({
+                    "job_title": job_data.get("job_title", ""),
+                    "required_skills": ", ".join(required_skills),
+                    "preferred_skills": ", ".join(preferred_skills),
+                    "available_skills": ", ".join(list(all_skills)[:50])  # Limit to top 50
+                })
+                
+                print(f"[DEBUG] Skills section LLM response: {response.content[:300]}...")
+                
+                # Validate the response
+                if response.content and len(response.content.strip()) > 50:
+                    return response.content
+                else:
+                    print("[WARNING] LLM response too short, using fallback")
+                    return fallback_skills
+                    
+            except Exception as llm_error:
+                print(f"[ERROR] LLM failed for skills generation: {str(llm_error)}")
+                return fallback_skills
+            
+        except Exception as e:
+            print(f"[ERROR] Skills generation failed: {str(e)}")
+            # Return a basic fallback
+            return """**Programming Languages:** Python, C++
+**AI/ML Frameworks:** PyTorch, TensorFlow, ONNX, scikit-learn
+**Tools & Platforms:** Git, Docker, CUDA, Linux, Jupyter
+**AI/ML Techniques:** Deep Learning, Model Compression, Quantization, Pruning
+**Hardware & Embedded:** PYNQ-Z1, Arduino, Edge Devices, IoT"""
+
+    def _create_fallback_skills_section(self, all_skills: set, required_skills: list, preferred_skills: list) -> str:
+        """Create a fallback skills section when LLM fails."""
+        try:
+            # Categorize skills manually
+            languages = {"python", "c++", "java", "javascript", "matlab"}
+            frameworks = {"pytorch", "tensorflow", "onnx", "fastapi", "scikit-learn", "numpy", "pandas"}
+            tools = {"git", "docker", "cuda", "linux", "jupyter", "pytest", "ci/cd"}
+            ai_ml = {"deep learning", "machine learning", "neural networks", "llm", "rag", "pruning", "quantization", "optimization"}
+            hardware = {"pynq", "arduino", "fpga", "edge devices", "iot", "embedded"}
+            
+            # Categorize available skills
+            categorized = {
+                "Languages": [],
+                "Frameworks": [],
+                "Tools": [],
+                "AI/ML": [],
+                "Hardware": []
+            }
+            
+            for skill in all_skills:
+                skill_lower = skill.lower()
+                if skill_lower in languages:
+                    categorized["Languages"].append(skill)
+                elif skill_lower in frameworks:
+                    categorized["Frameworks"].append(skill)
+                elif skill_lower in tools:
+                    categorized["Tools"].append(skill)
+                elif skill_lower in ai_ml:
+                    categorized["AI/ML"].append(skill)
+                elif skill_lower in hardware:
+                    categorized["Hardware"].append(skill)
+                else:
+                    # Default to Tools if not categorized
+                    categorized["Tools"].append(skill)
+            
+            # Build the formatted string
+            sections = []
+            for category, skills in categorized.items():
+                if skills:
+                    # Prioritize required and preferred skills
+                    prioritized_skills = []
+                    for skill in skills:
+                        if skill.lower() in [s.lower() for s in required_skills + preferred_skills]:
+                            prioritized_skills.insert(0, skill)
+                        else:
+                            prioritized_skills.append(skill)
+                    
+                    # Take top 8 skills per category
+                    top_skills = prioritized_skills[:8]
+                    sections.append(f"**{category}:** {', '.join(top_skills)}")
+            
+            return "\n".join(sections)
+            
+        except Exception as e:
+            print(f"[ERROR] Fallback skills creation failed: {str(e)}")
+            return """**Programming Languages:** Python, C++
+**AI/ML Frameworks:** PyTorch, TensorFlow, ONNX
+**Tools:** Git, Docker, CUDA, Linux
+**AI/ML:** Deep Learning, Model Compression, Quantization"""
+
+    async def _generate_summary_section_optimized(self, projects: List[Dict[str, Any]], 
+                                      job_description: str, job_data: Dict[str, Any]) -> str:
+        """Generate summary section (optimized version)."""
+        try:
+            # Extract key skills from projects
+            key_skills = set()
+            for project in projects[:5]:  # Use top 5 projects
+                technologies = project.get("technologies", [])
+                key_skills.update(technologies[:3])  # Top 3 technologies per project
+            
             prompt = ChatPromptTemplate.from_messages([
-                ("system", """You are an expert resume writer. Create a skills section that:
-                1. Prioritizes skills that match the job requirements
-                2. Groups skills logically (e.g., Programming Languages, Frameworks, Tools)
-                3. Includes both required and preferred skills from the job
-                4. Adds relevant skills from the candidate's projects
-                5. Uses professional formatting with clear categories
+                ("system", """You are an expert resume writer. Create a tight, impactful professional summary that:
+                1. Gets to the point in 2-3 lines maximum
+                2. Highlights key achievements and expertise
+                3. Matches the job requirements and industry focus
+                4. Uses strong action verbs and quantifiable results
+                5. Removes buzzwords and fluff
+                6. Focuses on "who you are" + "what you've done" in 3 seconds
+                7. Avoids brand names unless directly relevant to the job
+                8. Makes the candidate generalizable across different roles
                 
-                Format as a clean skills section with categorized skill groups."""),
+                IMPORTANT: 
+                - Format as a concise professional summary paragraph
+                - Do NOT use quotation marks around the summary
+                - Do NOT start with phrases like "Strategic" or "Proven track record"
+                - Be specific and impactful
+                - Focus on skills and capabilities rather than specific hardware or brand mentions
+                - Keep it to 2-3 sentences maximum"""),
                 ("user", """Job Title: {job_title}
+                Industry Focus: {industry_focus}
                 Required Skills: {required_skills}
-                Preferred Skills: {preferred_skills}
-                Project Skills: {project_skills}
+                Key Project Skills: {key_skills}
                 
-                Create a professional skills section that best matches the job requirements.""")
+                Create a tight, job-tailored summary that positions the candidate well for this role.
+                Focus on data-centric AI, research engineering, or GenAI infrastructure as appropriate.
+                Return ONLY the summary text without any quotes or formatting markers.""")
             ])
             
             chain = prompt | self.llm
             
             response = await chain.ainvoke({
                 "job_title": job_data.get("job_title", ""),
-                "required_skills": ", ".join(required_skills),
-                "preferred_skills": ", ".join(preferred_skills),
-                "project_skills": ", ".join(list(project_skills))
+                "industry_focus": job_data.get("industry_focus", ""),
+                "required_skills": ", ".join(job_data.get("required_skills", [])),
+                "key_skills": ", ".join(list(key_skills)[:10])  # Top 10 skills
             })
             
-            return response.content
+            # Clean up the response to remove quotes and extra formatting
+            summary = response.content.strip()
+            
+            # Remove surrounding quotes if present
+            if summary.startswith('"') and summary.endswith('"'):
+                summary = summary[1:-1].strip()
+            elif summary.startswith('"') and summary.endswith('"'):
+                summary = summary[1:-1].strip()
+            
+            # Remove any markdown formatting
+            summary = summary.replace('**', '').replace('*', '')
+            
+            # Ensure it's not empty
+            if not summary or len(summary) < 20:
+                # Fallback summary
+                summary = "PhD in Computer Science with expertise in neural network optimization, GenAI pipelines, and embedded ML deployment. Demonstrated success in developing scalable ML systems with 80% model compression and 3-5x inference speedup. Seeking roles focused on applied ML research and real-world deployment."
+            
+            return summary
             
         except Exception as e:
-            raise ValueError(f"Error generating skills section: {str(e)}")
-
-    async def _generate_summary_section(self, projects: List[Dict[str, Any]], 
-                                      job_description: str) -> str:
-        """Generate a professional summary based on projects and job requirements."""
-        return "PhD in Computer Science with expertise in neural network optimization, GenAI pipelines, and embedded ML deployment. Seeking Applied Scientist roles focused on scalable ML systems, search ranking models, reinforcement learning, and real-world deployment on large-scale infrastructure."
+            print(f"[ERROR] Summary generation failed: {str(e)}")
+            # Return a fallback summary
+            return "PhD in Computer Science with expertise in neural network optimization, GenAI pipelines, and embedded ML deployment. Demonstrated success in developing scalable ML systems with 80% model compression and 3-5x inference speedup. Seeking roles focused on applied ML research and real-world deployment."
 
     def generate_tailored_resume(self, job_description: str, include_sections: list[str]) -> dict:
         """

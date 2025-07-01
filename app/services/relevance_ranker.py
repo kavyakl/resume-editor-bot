@@ -20,7 +20,7 @@ class RelevanceRanker:
             model=settings.vector_db.embedding_model,
             api_key=settings.OPENAI_API_KEY
         )
-        self.vector_store_path = os.path.join(settings.paths.embeddings_dir, "projects_relevance")
+        self.vector_store_path = os.path.join(settings.paths.embeddings_dir, "projects")
         self.vector_store = self._load_vector_store()
         self.job_parser = JobAnalysisService()
         self.project_store = ProjectStoreService()
@@ -70,11 +70,42 @@ class RelevanceRanker:
         ranked_projects = await self.rank_projects(job_description, projects)
         top_projects = ranked_projects[:settings.project_analysis.max_recommendations]
 
-        job_analysis = await self.job_parser.analyze_job_description(job_description)
+        # Make sure job_analysis is awaited if it's async
+        try:
+            job_analysis = await self.job_parser.analyze_job_description(job_description)
+        except:
+            job_analysis = {}
+        
         project_stats = self.project_store.get_project_statistics()
 
         return {
             "ranked_projects": top_projects,
             "job_analysis": job_analysis,
             "project_statistics": project_stats
-        } 
+        }
+
+    async def rank_projects_for_job(self, job_description: str, top_k: int = 5) -> list[dict]:
+        """Rank projects by relevance to a job description."""
+        try:
+            projects = self.project_store.get_all_projects()
+            if not projects:
+                return []
+            
+            ranked_projects = await self.rank_projects(job_description, projects)
+            return ranked_projects[:top_k]
+            
+        except Exception as e:
+            print(f"Error ranking projects: {e}")
+            return []
+
+    async def create_project_vector_store(self) -> bool:
+        """Create vector store from all projects."""
+        try:
+            projects = self.project_store.get_all_projects()
+            if projects:
+                self.create_project_vector_store(projects)
+                return True
+            return False
+        except Exception as e:
+            print(f"Error creating vector store: {e}")
+            return False 

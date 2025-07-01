@@ -1,4 +1,5 @@
 title: Dynamic Sparsity Optimization for CNNs
+slug: dynamic-sparsity-optimization
 description: Developed adaptive pruning strategies with sparsity-aware training loops using PyTorch and CUDA 12.3 to optimize ranking-quality CNNs.
 role: Lead Researcher
 technologies:
@@ -27,5 +28,8 @@ duration: "12 months"
 team_size: 2
 challenges: Balancing sparsity levels with model accuracy, optimizing CUDA kernels for sparse operations, and developing efficient dynamic pruning algorithms that don't significantly slow down training. Managing GPU memory efficiently with the 11264 MiB capacity for large-scale model training.
 created_at: '2025-01-27T10:00:00.000000'
+sections: ["research", "project"]
+relevance_tags: ["ml", "optimization", "pruning", "gpu", "cuda", "computer-vision", "research", "edge-ai"]
+featured: true
 source_text: I conducted research on dynamic sparsity optimization for Convolutional Neural Networks using NVIDIA GeForce GTX 1080 Ti GPU with 11264 MiB memory and PyTorch 2.1.2 with CUDA 12.3 (cu121). The project involved developing adaptive pruning strategies that can dynamically adjust model sparsity during training to optimize for both accuracy and computational efficiency. We leveraged the substantial computational power of the GTX 1080 Ti for GPU-accelerated training, achieving 3-5x faster training times compared to CPU-only implementations. The large GPU memory capacity enabled larger batch sizes and more complex model architectures. The dynamic sparsity approach achieved up to 80% model compression while maintaining competitive accuracy on image classification tasks. Key challenges included balancing sparsity levels with model accuracy, optimizing CUDA kernels for sparse operations, and developing efficient dynamic pruning algorithms that don't significantly slow down training. This research contributes to the field of efficient deep learning for edge devices and real-time applications, demonstrating the effectiveness of high-performance GPU computing for model optimization research.
 filename: dynamic_sparsity_optimization 

@@ -1,4 +1,5 @@
 title: "Resume Editor Bot"
+slug: resume-editor-bot
 description: "An intelligent resume editing assistant powered by RAG that helps users create, optimize, and tailor their resumes using LLMs. Features dynamic, project-based resume generation, smart project ranking, and job-specific tailoring."
 role: "Sole Developer & AI Engineer"
 technologies:
@@ -15,4 +16,7 @@ impact: "Automates the creation of tailored, job-specific resumes, saving signif
 github_url: "https://github.com/kavyakl/resume-editor-bot"
 duration: "Ongoing"
 team_size: "1"
-challenges: "Debugging complex AI prompt chains, managing application state, and ensuring robust document formatting." 
+challenges: "Debugging complex AI prompt chains, managing application state, and ensuring robust document formatting."
+sections: ["project"]
+relevance_tags: ["genai", "rag", "nlp", "tooling", "web-app", "automation"]
+featured: true 

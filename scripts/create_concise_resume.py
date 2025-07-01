@@ -79,8 +79,10 @@ def build_resume(generated_data):
 
     contact_p = doc.add_paragraph()
     contact_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    contact_p.add_run("Tampa, FL · +1-813-609-9796 · kavyakalyanamk@gmail.com\n")
-    contact_p.add_run("linkedin.com/in/lakshmikavya-kalyanam-a88633131 · github.com/kavyakl\n")
+    contact_p.add_run("Tampa, FL · +1-813-609-9796 · kavyakalyanamk@gmail.com")
+    contact_p.add_run("\n")
+    contact_p.add_run("linkedin.com/in/lakshmikavya-kalyanam-a88633131 · github.com/kavyakl")
+    contact_p.add_run("\n")
     set_run_font(contact_p.add_run("US Work Authorization | Open to Relocation"), italic=True)
     add_horizontal_line(doc)
 
@@ -94,14 +96,27 @@ def build_resume(generated_data):
     # --- Technical Skills (Dynamic) ---
     add_section_heading(doc, "Technical Skills")
     skills_text = generated_data.get("sections", {}).get("skills", "")
-    for line in skills_text.split('\n'):
-        line = line.strip()
-        if ':' in line:
-            category, skill_list = line.split(':', 1)
-            p = doc.add_paragraph()
-            p.paragraph_format.space_after = Pt(0)
-            set_run_font(p.add_run(f"{category.strip()}: "), bold=True)
-            p.add_run(skill_list.strip())
+    
+    # Process skills text with robust parsing
+    if skills_text:
+        lines = [line.strip() for line in skills_text.strip().split('\n') if line.strip()]
+        for line in lines:
+            if line.startswith('**') and ':' in line:
+                # Extract category and skills
+                try:
+                    category = line.split('**', 2)[1].split(':', 1)[0].strip()
+                    skills = line.split(':', 1)[1].strip()
+                    p = doc.add_paragraph()
+                    set_run_font(p.add_run(f"{category}: "), bold=True)
+                    p.add_run(skills)
+                except Exception as e:
+                    # Silently skip malformed lines
+                    continue
+    else:
+        # Fallback if no skills generated
+        p = doc.add_paragraph()
+        p.add_run("Skills not generated")
+    
     add_horizontal_line(doc)
     
     # --- Research Experience (Dynamic) ---
@@ -113,9 +128,13 @@ def build_resume(generated_data):
     p.paragraph_format.space_after = Pt(0)
     doc.add_paragraph("2019 – Present", style='Normal').paragraph_format.space_after = Pt(2)
     
-    experience_highlights = generated_data.get("sections", {}).get("research_experience", "")
+    experience_highlights = generated_data.get("sections", {}).get("research", "")
     for line in experience_highlights.split('\n'):
         line = line.strip().lstrip('*-• ').strip().strip('"')
+        # Skip duplicate headers and empty lines
+        if not line or line.lower() in ['research experience', 'phd researcher', 'university of south florida', 'tampa, fl', '2019 – present']:
+            continue
+        # Remove numbered prefixes
         if line and line[0].isdigit() and (line[1] == '.' or line[1] == ')'):
              line = line[2:].lstrip()
         if not line:
@@ -168,12 +187,12 @@ def build_resume(generated_data):
     # --- Patents ---
     add_section_heading(doc, "Patents")
     patents = [
-        ("Layer-Wise Filter Thresholding Based CNN Pruning for Efficient IoT Edge Implementations", 
-         "US Provisional Application No. 63/552,084 | Filed: Feb 9, 2024 | USF Ref: 24T085US"),
+        ("CNN Pruning for IoT Edge Devices", 
+         "US Provisional 63/552,084 (Filed Feb 2024)"),
         ("Unstructured Pruning for Multi-Layer Perceptrons with Tanh Activation",
-         "Invention ID: USF23/00331 | Filed: 2023 | USF Tech ID: 24T063"),
+         "USF23/00331 (Filed 2023)"),
         ("Range-Based Hardware Optimization of Multi-Layer Perceptrons with ReLUs",
-         "USF Tech Ref: 23T078US | Filed: 2023 | Q&B Ref: 173738.02709")
+         "USF Tech Ref: 23T078US (Filed 2023)")
     ]
     for title, detail_text in patents:
         p = doc.add_paragraph(style='List Bullet')
@@ -212,10 +231,11 @@ def main():
         time.sleep(3) # Give the server a moment to start
         print("Requesting tailored content for resume sections...")
         response = requests.post(
-            "http://localhost:8000/api/generate-tailored-resume",
+            "http://localhost:8000/api/generate-deduplicated-resume",
             json={
                 "job_description": args.job_description,
-                "include_sections": ["summary", "skills", "research_experience"]
+                "include_sections": ["summary", "skills", "research"],
+                "max_projects_per_section": 4
             }
         )
         response.raise_for_status()
