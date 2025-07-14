@@ -84,79 +84,99 @@ def build_resume(generated_data):
     contact_p.add_run("linkedin.com/in/lakshmikavya-kalyanam-a88633131 · github.com/kavyakl")
     contact_p.add_run("\n")
     set_run_font(contact_p.add_run("US Work Authorization | Open to Relocation"), italic=True)
-    add_horizontal_line(doc)
+    # Removed add_horizontal_line(doc) here for cleaner header
 
     # --- Objective (Dynamic) ---
     add_section_heading(doc, "Objective")
-    objective_text = generated_data.get("sections", {}).get("summary", "No summary generated.")
-    p = doc.add_paragraph(objective_text)
-    p.paragraph_format.space_after = Pt(0)
+    objective_text = (
+        "PhD Candidate and Research Engineer specializing in Embedded AI, Computer Vision, and GenAI Systems. "
+        "Actively seeking a full-time research or engineering position in Computer Vision, GenAI, or Embedded AI."
+    )
+    doc.add_paragraph(objective_text)
+    # Add a horizontal line above Technical Skills for separation
     add_horizontal_line(doc)
-
-    # --- Technical Skills (Dynamic) ---
+    # --- Technical Skills (Grouped, Bolded) ---
     add_section_heading(doc, "Technical Skills")
-    skills_text = generated_data.get("sections", {}).get("skills", "")
-    
-    # Process skills text with robust parsing
-    if skills_text:
-        lines = [line.strip() for line in skills_text.strip().split('\n') if line.strip()]
-        for line in lines:
-            if line.startswith('**') and ':' in line:
-                # Extract category and skills
-                try:
-                    category = line.split('**', 2)[1].split(':', 1)[0].strip()
-                    skills = line.split(':', 1)[1].strip()
-                    p = doc.add_paragraph()
-                    set_run_font(p.add_run(f"{category}: "), bold=True)
-                    p.add_run(skills)
-                except Exception as e:
-                    # Silently skip malformed lines
-                    continue
-    else:
-        # Fallback if no skills generated
+    skills_lines = [
+        ("Languages", "Python, C++17, Embedded C, Shell, CUDA, VHDL"),
+        ("Frameworks", "PyTorch, TensorFlow, TFLite, ONNX, HuggingFace, FastAI"),
+        ("Optimization", "Pruning (structured/unstructured), Quantization, RigL, XAI"),
+        ("Computer Vision", "CNNs, BNNs, ViTs, image-text modeling"),
+        ("GenAI & RAG", "FAISS, ElasticSearch, LangChain, RAG pipelines, LLM fine-tuning, OpenAI APIs"),
+        ("Embedded Systems", "Arduino, NodeMCU, PYNQ-Z1, Virtex-7, Edge Impulse"),
+        ("Compiler-Aware Deployment", "ONNX graph rewrites, IR transforms, MLIR-inspired optimization"),
+        ("Tooling", "Vivado, HSPICE, Virtuoso, Git, Jupyter, MATLAB, Linux CLI, pytest"),
+        ("Profiling & Inference", "Latency/power profiling, QAT, firmware integration, CI/CD")
+    ]
+    for category, skills in skills_lines:
         p = doc.add_paragraph()
-        p.add_run("Skills not generated")
+        set_run_font(p.add_run(f"{category}: "), bold=True)
+        p.add_run(skills)
     
     add_horizontal_line(doc)
     
-    # --- Research Experience (Dynamic) ---
+    # --- Research Experience (Chronological, Process-Oriented) ---
     add_section_heading(doc, "Research Experience")
-    p = doc.add_paragraph()
-    set_run_font(p.add_run("PhD Researcher"), bold=True)
-    p.add_run(", University of South Florida — ")
-    set_run_font(p.add_run("Tampa, FL"), italic=True)
-    p.paragraph_format.space_after = Pt(0)
-    doc.add_paragraph("2019 – Present", style='Normal').paragraph_format.space_after = Pt(2)
-    
-    experience_highlights = generated_data.get("sections", {}).get("research", "")
-    for line in experience_highlights.split('\n'):
-        line = line.strip().lstrip('*-• ').strip().strip('"')
-        # Skip duplicate headers and empty lines
-        if not line or line.lower() in ['research experience', 'phd researcher', 'university of south florida', 'tampa, fl', '2019 – present']:
-            continue
-        # Remove numbered prefixes
-        if line and line[0].isdigit() and (line[1] == '.' or line[1] == ')'):
-             line = line[2:].lstrip()
-        if not line:
-            continue
-        p = doc.add_paragraph(style='List Bullet')
-        parse_and_add_text(p, line)
+    research_roles = [
+        {
+            "role": "PhD Researcher",
+            "institution": "University of South Florida",
+            "dates": "2019–Present",
+            "bullets": [
+                "Built end-to-end optimization pipeline for DNN pruning, quantization, and deployment on ARM MCUs and FPGAs.",
+                "Simulated ONNX graph rewrites to mimic IR compiler passes for sparse model deployment.",
+                "Deployed real-time inference on Arduino MKR1000, NodeMCU, and PYNQ-Z1 with quantized/pruned models."
+            ]
+        }
+    ]
+    for role in research_roles:
+        p = doc.add_paragraph()
+        set_run_font(p.add_run(f"{role['role']}, {role['institution']} ({role['dates']})"), bold=True)
+        for bullet in role["bullets"]:
+            doc.add_paragraph(bullet, style="List Bullet")
     add_horizontal_line(doc)
 
-    # --- Selected Projects ---
-    add_section_heading(doc, "Selected Projects")
-    
-    # Project 1
-    p = doc.add_paragraph(style='List Bullet')
-    parse_and_add_text(p, "**LitBot – AI Literature Survey Assistant**\ngithub.com/kavyakl/litnet\nDeveloped a GPT + FAISS-powered assistant for academic paper search and summarization. Accelerated literature review workflows by 80%, with semantic clustering, citation tracking, and paper similarity scoring.")
+    # --- Applied Research Highlights (Thematic, Impact-Oriented) ---
+    add_section_heading(doc, "Applied Research Highlights")
+    highlights = [
+        ("Activation-Aware MLP Pruning", "Achieved 82% sparsity and 37% hardware savings with <1.5% accuracy loss by designing activation-aware pruning strategies for MLPs."),
+        ("Real-Time Edge Deployment", "Enabled sub-200 ms inference and 60% memory reduction by deploying optimized DNNs on Arduino MKR1000 and NodeMCU."),
+        ("RigL-Based Sparse CNN Training", "Achieved 91.5% weight sparsity and 4× FLOP reduction on VGG-11 with 90.53% accuracy on CIFAR-10 using dynamic sparsity scheduling."),
+        ("Vision Transformers for Embedded CV", "Outperformed CNNs on Fashion-MNIST and CIFAR-10 in generalization and robustness by designing ViTs for low-data regimes."),
+        ("RAG Pipelines for Literature Summarization", "Improved factuality and review coverage by 80% by building FAISS + LLM-powered RAG pipelines to summarize 500+ scientific papers."),
+        ("ONNX Compiler Pass Simulation", "Enabled compile-time-aware model optimization by implementing graph-level transformations (pruning, quantization) simulating compiler IR behavior.")
+    ]
+    for title, desc in highlights:
+        p = doc.add_paragraph()
+        set_run_font(p.add_run(f"{title} – "), bold=True)
+        p.add_run(desc)
+    add_horizontal_line(doc)
 
-    # Project 2
-    p = doc.add_paragraph(style='List Bullet')
-    parse_and_add_text(p, "**Resume Editor Bot – RAG-Powered Resume Generator**\ngithub.com/kavyakl/resume-editor-bot\nCreated a job-tailored resume builder using RAG + OpenAI APIs. Features project ranking, DOCX export, and LLM-based section rewriting for ML/LLM job applications.")
-    
-    # Project 3
-    p = doc.add_paragraph(style='List Bullet')
-    parse_and_add_text(p, "**RAG-Based Neural Network Optimizer**\ngithub.com/kavyakl/RAG-Based-Neural-Network-Optimization\nBuilt a GenAI assistant for analyzing DNN pruning results. Performs insight generation, clustering, and performance comparison across model variants.")
+    # --- Projects Section (One-liner + GitHub) ---
+    add_section_heading(doc, "Projects")
+    projects = [
+        {
+            "name": "LitBot – AI Literature Survey Assistant",
+            "summary": "Semantic search + summarization assistant using GPT + FAISS. Cut paper review time by 80%.",
+            "github": "github.com/kavyakl/litnet"
+        },
+        {
+            "name": "Distributed Real-Time Object Detection Framework",
+            "summary": "BNN-based image classifier for distributed IoT edge nodes. Real-time detection at low frame rates.",
+            "github": None
+        },
+        {
+            "name": "RAG-Based Neural Network Pruning Analysis Tool",
+            "summary": "GenAI assistant for analyzing DNN pruning results. Performs insight generation, clustering, and performance comparison across model variants.",
+            "github": "github.com/kavyakl/RAG-Based-Neural-Network-Optimization"
+        }
+    ]
+    for proj in projects:
+        p = doc.add_paragraph()
+        set_run_font(p.add_run(proj["name"]), bold=True)
+        doc.add_paragraph(proj["summary"])
+        if proj.get("github"):
+            doc.add_paragraph(f"🔗 {proj['github']}")
     add_horizontal_line(doc)
 
     # --- Education ---
@@ -168,7 +188,7 @@ def build_resume(generated_data):
     set_run_font(p.add_run("University of South Florida"), italic=True)
     p.add_run(" (Expected 2025)")
     doc.add_paragraph("Focus: Neural network compression, dynamic sparsity, embedded ML deployment", style='List Bullet')
-    doc.add_paragraph("Publications & IP: 3 patents filed, 2 Best Paper Awards, multiple IEEE iSES publications.", style='List Bullet')
+    doc.add_paragraph("Publications & IP: 6 peer-reviewed publications, 3 patents filed, 2 Best Paper Awards.", style='List Bullet')
 
     p = doc.add_paragraph()
     set_run_font(p.add_run("M.S., Computer Science"), bold=True)
@@ -184,20 +204,14 @@ def build_resume(generated_data):
     p.add_run(" (2017)")
     add_horizontal_line(doc)
     
-    # --- Patents ---
-    add_section_heading(doc, "Patents")
-    patents = [
-        ("CNN Pruning for IoT Edge Devices", 
-         "US Provisional 63/552,084 (Filed Feb 2024)"),
-        ("Unstructured Pruning for Multi-Layer Perceptrons with Tanh Activation",
-         "USF23/00331 (Filed 2023)"),
-        ("Range-Based Hardware Optimization of Multi-Layer Perceptrons with ReLUs",
-         "USF Tech Ref: 23T078US (Filed 2023)")
+    # --- Publications, Patents & Recognition ---
+    add_section_heading(doc, "Publications & Patents")
+    pub_list = [
+        "6 Peer-Reviewed Publications (full list available upon request)",
+        "3 Patents Filed on Compiler-Aware Pruning and Quantization for Embedded DNNs"
     ]
-    for title, detail_text in patents:
-        p = doc.add_paragraph(style='List Bullet')
-        set_run_font(p.add_run(title), bold=True)
-        p.add_run(f": {detail_text}")
+    for pub in pub_list:
+        doc.add_paragraph(pub, style="List Bullet")
 
     # --- Awards & Honors ---
     add_section_heading(doc, "Awards & Honors")
