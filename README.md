@@ -3,7 +3,7 @@
 A modular, YAML-driven resume generation and analysis system for AI researchers and engineers. Supports both API-based and local script workflows, with dynamic project, publication, and patent integration.
 
 ## 🚀 Key Features
-- **Customized Resume generation** (local script or API)
+- **World-class resume generation** (local script or API)
 - **YAML-driven data**: Projects, publications, and patents are structured and easy to update
 - **Factual, quantified project claims**
 - **Dynamic patent and publication loading**
@@ -79,10 +79,21 @@ featured: true
 ### Example: Patent YAML (in patents.yaml)
 ```yaml
 - title: "Layer-Wise Filter Thresholding Based CNN Pruning for Efficient IoT Edge Implementations"
-  inventors: ["Srinivasa Katkoori", "Lakshmi Kavya Kalyanam"]
+  inventors: ["Srinivas Katkoori", "Lakshmi Kavya Kalyanam"]
   application_number: "63/552,084"
   filing_date: "2024-02-09"
   usf_ref: "24T085US"
+  description: "Provisional patent for a thresholding-based CNN pruning method for efficient IoT edge deployment."
+- title: "Unstructured Pruning for Multi-Layer Perceptrons with Tanh Activation"
+  inventors: ["Srinivas Katkoori", "Lakshmi Kavya Kalyanam"]
+  invention_id: "USF23/00331"
+  tech_id: "24T063"
+  description: "Patent for unstructured pruning techniques for MLPs with tanh activation."
+- title: "Range-Based Hardware Optimization of Multi-Layer Perceptrons with ReLUs"
+  inventors: ["Srinivas Katkoori", "Lakshmi Kavya Kalyanam"]
+  usf_ref: "23T078US"
+  qnb_ref: "173738.02709"
+  description: "Patent for range-based hardware optimization of MLPs with ReLU activation."
 ```
 
 ---
@@ -126,9 +137,9 @@ python tests/test_project_system.py
 
 ## 📈 Key Benefits
 - **Factual, quantified, and recruiter-ready resumes**
-- **Easy to update**: Just edit your YAML files
+- **Easy to update**: Just edit your YAML files (projects, publications, patents)
 - **Supports both local and API workflows**
-- **Patent and publication integration**
+- **Patent and publication integration from YAML**
 - **Modern, modular, and extensible**
 
 ---
