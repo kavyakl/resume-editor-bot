@@ -3,7 +3,7 @@
 A modular, YAML-driven resume generation and analysis system for AI researchers and engineers. Supports both API-based and local script workflows, with dynamic project, publication, and patent integration.
 
 ## 🚀 Key Features
-- **World-class resume generation** (local script or API)
+- **Customised Resume generation** (local script or API)
 - **YAML-driven data**: Projects, publications, and patents are structured and easy to update
 - **Factual, quantified project claims**
 - **Dynamic patent and publication loading**
