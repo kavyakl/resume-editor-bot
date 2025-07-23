@@ -1,10 +1,6 @@
 title: 'LitBot: AI Literature Survey Assistant'
 slug: litbot
-description: LitBot is an AI-powered literature survey assistant developed to help
-  researchers efficiently manage and analyze academic papers. The system provides
-  intelligent paper search, summarization, citation management, and advanced relationship
-  analysis with sophisticated AI/ML-specific preprocessing, semantic chunking, and
-  reference mapping capabilities.
+description: Designed and built LitBot, a custom GPT + FAISS-powered literature assistant for neural network sparsity research. Integrated semantic chunking, extractive summarization, and citation linking across 200+ papers to streamline paper reviews and draft prep workflows.
 role: Developer
 technologies:
 - OpenAI GPT models
@@ -21,7 +17,7 @@ methods:
 - section-based citation analysis
 - enhanced relationship analysis
 - batch processing automation
-results: "Reduced manual literature review time by over 80% for researchers, accelerating the discovery of relevant studies and insights. The system was adopted by 10+ researchers in the lab, indexing over 500 papers."
+results: "Integrated semantic chunking, extractive summarization, and citation linking across 200+ papers to streamline paper reviews and draft prep workflows."
 impact: "Enabled faster, more comprehensive literature reviews for academic research."
 duration: "8 months"
 team_size: 1

@@ -15,8 +15,8 @@ methods:
 - Distributed architecture
 - Distributed task allocation
 - PYNQ-Z1 programming
-results: Achieved real-time object detection at 19.23 FPS across a distributed 3-node system, reducing communication latency and enabling real-time search for resource-constrained applications.
-impact: Enabled complex, real-time AI workloads on low-power edge infrastructure, demonstrating a scalable approach for IoT and embedded vision systems. [IEEE iSES 2020 – Best Paper]
+results: Achieved real-time object detection at 19.23 FPS across a distributed 3-node system
+impact: Enabled real-time AI workloads on low-power edge infrastructure for IoT vision systems
 duration: "10 months"
 team_size: 1
 challenges:

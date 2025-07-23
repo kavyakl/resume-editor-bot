@@ -1,0 +1,82 @@
+publications:
+  - title: "Unstructured Pruning for Multi-Layer Perceptrons with Tanh Activation"
+    authors: "L. K. Kalyanam, S. Katkoori"
+    venue: "IEEE International Symposium on Smart Electronic Systems (iSES)"
+    year: 2023
+    location: "Ahmedabad, India"
+    doi: "10.1109/iSES58672.2023.00025"
+    award: "Best Paper Award"
+    type: "conference"
+    
+  - title: "A Distributed Framework for Real-Time Object Detection at Low Frame Rates with IoT Edge Nodes"
+    authors: "L. K. Kalyanam, V. L. Ramnath, S. Katkoori, H. Zheng"
+    venue: "IEEE International Symposium on Smart Electronic Systems (iSES)"
+    year: 2020
+    location: "Chennai, India"
+    doi: "10.1109/iSES580453.2020.00070"
+    award: "Best Paper Award"
+    type: "conference"
+    
+  - title: "Range Based Hardware Optimization of Multi-Layer Perceptrons with RELUs"
+    authors: "L. K. Kalyanam, R. Joshi, S. Katkoori"
+    venue: "IEEE International Symposium on Smart Electronic Systems (iSES)"
+    year: 2022
+    location: "Warangal, India"
+    doi: "10.1109/iSES54909.2020.00092"
+    type: "conference"
+    
+  - title: "Sigmod-based Neuron Pruning Technique for MLPs on IoT Edge Devices"
+    authors: "L. K. Kalyanam, S. Katkoori"
+    venue: "International Conference on Cyber Physical Systems, Power Electronics and Electric Vehicles (ICPEEV)"
+    year: 2023
+    location: "Hyderabad, India"
+    doi: "10.1109/ICPEEV58650.2023.10391875"
+    type: "conference"
+    
+  - title: "Layer-Wise Filter Thresholding Based CNN Pruning for Efficient IoT Edge Implementations"
+    authors: "Kalyanam, L.K., Joshi, R., Katkoori, S."
+    venue: "IFIP Advances in Information and Communication Technology"
+    year: 2023
+    publisher: "Springer, Cham"
+    volume: 683
+    type: "conference"
+    
+  - title: "Simulated annealing based integerization of hidden weights for area-efficient IoT edge intelligence"
+    authors: "Joshi, Rajeev, Lakshmi Kavya Kalyanam, and Srinivas Katkoori"
+    venue: "IEEE International Symposium on Smart Electronic Systems (iSES)"
+    year: 2022
+    publisher: "IEEE"
+    type: "conference"
+    
+  - title: "Simulated Annealing Based Area Optimization of Multilayer Perceptron Hardware for IoT Edge Devices"
+    authors: "Joshi, Rajeev, Lakshmi Kavya Kalyanam, and Srinivas Katkoori"
+    venue: "IFIP International Internet of Things Conference"
+    year: 2023
+    publisher: "Springer Nature Switzerland, Cham"
+    type: "conference"
+    
+  - title: "Area efficient VLSI ASIC implementation of multilayer perceptrons"
+    authors: "Joshi, Rajeev, Lakshmi Kavya Kalyanam, and Srinivas Katkoori"
+    venue: "International VLSI Symposium on Technology, Systems and Applications (VLSI-TSA/VLSI-DAT)"
+    year: 2023
+    publisher: "IEEE"
+    type: "conference"
+    
+  - title: "Automated Hidden Neuron Optimization for Multilayer Perceptrons for Classification Tasks"
+    authors: "S. Boyidapu, L. K. Kalyanam and S. Katkoori"
+    venue: "International Conference on Cyber Physical Systems, Power Electronics and Electric Vehicles (ICPEEV)"
+    year: 2024
+    location: "Hyderabad, India"
+    type: "conference"
+
+metadata:
+  total_publications: 9
+  conference_papers: 9
+  journal_papers: 0
+  best_paper_awards: 2
+  years_span: "2020-2024"
+  primary_venues:
+    - "IEEE iSES"
+    - "ICPEEV"
+    - "IFIP IoT"
+    - "VLSI-TSA"

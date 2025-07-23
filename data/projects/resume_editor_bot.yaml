@@ -11,8 +11,8 @@ technologies:
   - python-docx
   - Git
 methods: "Developed a modular FastAPI application with a services-oriented architecture. Implemented a dynamic content generation pipeline using LangChain and OpenAI prompts. Engineered a skills database and tailored content selection based on job descriptions. Built a robust document generation script using python-docx."
-results: "Successfully created a system that generates a fully-tailored, one-page resume in DOCX format based on a job description. The system dynamically selects and formats skills and research experience."
-impact: "Automates the creation of tailored, job-specific resumes, saving significant time and effort in job application processes."
+results: "Successfully created a system that generates fully-tailored resumes in DOCX format based on job descriptions"
+impact: "Automates tailored resume creation, saving significant time in job applications"
 github_url: "https://github.com/kavyakl/resume-editor-bot"
 duration: "Ongoing"
 team_size: "1"

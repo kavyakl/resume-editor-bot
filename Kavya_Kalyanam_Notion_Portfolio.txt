@@ -1,0 +1,102 @@
+# Kavya Kalyanam
+
+_PhD in Deep Learning | Embedded ML | GenAI Systems | Edge AI_
+
+[GitHub](https://github.com/kavyakl) | [LinkedIn](https://www.linkedin.com/in/lakshmikavya-kalyanam-a88633131/) | [ResearchGate](https://www.researchgate.net/profile/Lakshmikavya-Kalyanam)
+
+🎯 Current Focus: Finalizing PhD dissertation and submitting my CNN sparsity framework to a top-tier venue. Building deployment-aware tools for real-world edge AI applications.
+
+---
+
+## 👤 About Me
+Deployment-focused researcher with a passion for building and optimizing deep learning systems for real-world use. Seeking full-time roles in Computer Vision, GenAI, or Embedded AI where I can deliver scalable, efficient AI solutions.
+
+---
+
+## 🛠️ Technical Skills
+- **Languages & Scripting:** Python, C++17, Embedded C, CUDA, VHDL
+- **ML & CV Frameworks:** PyTorch, TensorFlow, TFLite, ONNX, HuggingFace, FastAI
+- **Optimization & Quantization:** Pruning (structured/unstructured), Quantization, RigL
+- **Embedded/Hardware:** Arduino, NodeMCU, PYNQ-Z1, Virtex-7
+- **Tooling:** Vivado, HSPICE, Virtuoso, Git, Jupyter, MATLAB, Linux CLI
+- **Deployment:** ONNX graph rewrites, Edge Impulse toolchain, model export for MCUs/FPGAs
+
+---
+
+## 📂 Projects
+### Resume Editor Bot
+LLM + RAG resume tailoring system. Used by 20+ grad students. Generates tailored DOCX resumes in under 15s per job spec.
+[GitHub](https://github.com/kavyakl/resume-editor-bot)
+
+### LitBot: AI Literature Survey Assistant
+Designed and built LitBot, a custom GPT + FAISS-powered literature assistant for neural network sparsity research. Integrated semantic chunking, extractive summarization, and citation linking across 200+ papers to streamline paper reviews and draft prep workflows.
+[GitHub](https://github.com/kavyakl/litnet)
+
+### Dynamic Sparsity Optimization for CNNs
+5-stage, compiler-aware compression pipeline for CNNs. Achieved 98.98% sparsity on LeNet-5 and 91.21% on VGG-11, with 4.33× inference speedup using ONNX.
+
+### Distributed Real-Time Object Detection Framework
+Built a distributed system using PYNQ Z1 AP-SoCs, enabling 19.23 FPS object detection across three nodes with BNNs. Real-time deployment for IoT edge vision.
+
+---
+
+## 🧪 Research Highlights
+### Model Optimization & Deployment
+- 82% sparsity with <1.5% accuracy drop via activation-aware pruning on MLPs
+- 90.75% FLOP reduction on VGG-11 with maintained 89% accuracy using dynamic sparsity
+- 60% memory reduction and sub-200 ms inference on Arduino/NodeMCU with optimized DNNs
+
+### GenAI & Literature Automation
+- 80% reduction in manual review time by building FAISS + LLM-powered RAG pipelines for literature summarization
+
+### Vision & Embedded AI
+- Real-time BNN-based object detection at 19.23 FPS on distributed IoT nodes
+- Outperformed CNNs on Fashion-MNIST and CIFAR-10 in generalization and robustness by designing ViTs for low-data regimes
+
+---
+
+## 📖 Publications
+For full publication list, see my [ResearchGate profile](https://www.researchgate.net/profile/Lakshmikavya-Kalyanam).
+
+- **Kalyanam, L.K., S. Katkoori.** "Unstructured Pruning for Multi-Layer Perceptrons with Tanh Activation." IEEE International Symposium on Smart Electronic Systems (iSES), 2023. [DOI](https://doi.org/10.1109/iSES58672.2023.00025) 🏆 Best Paper Award
+- **Kalyanam, L.K., V.L. Ramnath, S. Katkoori, H. Zheng.** "A Distributed Framework for Real-Time Object Detection at Low Frame Rates with IoT Edge Nodes." IEEE International Symposium on Smart Electronic Systems (iSES), 2020. [DOI](https://doi.org/10.1109/iSES580453.2020.00070) 🏆 Best Paper Award
+- **Kalyanam, L.K., R. Joshi, S. Katkoori.** "Range Based Hardware Optimization of Multi-Layer Perceptrons with RELUs." IEEE International Symposium on Smart Electronic Systems (iSES), 2022. [DOI](https://doi.org/10.1109/iSES54909.2020.00092)
+- **Kalyanam, L.K., S. Katkoori.** "Sigmod-based Neuron Pruning Technique for MLPs on IoT Edge Devices." International Conference on Cyber Physical Systems, Power Electronics and Electric Vehicles (ICPEEV), 2023. [DOI](https://doi.org/10.1109/ICPEEV58650.2023.10391875)
+- **Kalyanam, L.K., Joshi, R., Katkoori, S.** "Layer-Wise Filter Thresholding Based CNN Pruning for Efficient IoT Edge Implementations." IFIP Advances in Information and Communication Technology, 2023. Springer, Cham, vol. 683.
+- **Joshi, Rajeev, Lakshmi Kavya Kalyanam, and Srinivas Katkoori.** "Simulated annealing based integerization of hidden weights for area-efficient IoT edge intelligence." IEEE International Symposium on Smart Electronic Systems (iSES), 2022. IEEE.
+- **Joshi, Rajeev, Lakshmi Kavya Kalyanam, and Srinivas Katkoori.** "Simulated Annealing Based Area Optimization of Multilayer Perceptron Hardware for IoT Edge Devices." IFIP International Internet of Things Conference, 2023. Springer Nature Switzerland, Cham.
+- **Joshi, Rajeev, Lakshmi Kavya Kalyanam, and Srinivas Katkoori.** "Area efficient VLSI ASIC implementation of multilayer perceptrons." International VLSI Symposium on Technology, Systems and Applications (VLSI-TSA/VLSI-DAT), 2023. IEEE.
+- **S. Boyidapu, L.K. Kalyanam, S. Katkoori.** "Automated Hidden Neuron Optimization for Multilayer Perceptrons for Classification Tasks." International Conference on Cyber Physical Systems, Power Electronics and Electric Vehicles (ICPEEV), 2024.
+
+---
+
+## 🧬 Patents
+- **Layer-Wise Filter Thresholding Based CNN Pruning for Efficient IoT Edge Implementations**  
+  Inventors: Srinivasa Katkoori, Lakshmi Kavya Kalyanam  
+  US Provisional Application No. 63/552,084 | Filed: Feb 9, 2024 | USF Ref: 24T085US
+- **Unstructured Pruning for Multi-Layer Perceptrons with Tanh Activation**  
+  Inventors: Srinivas Katkoori, Lakshmi Kavya Kalyanam  
+  Invention ID: USF23/00331 | USF Tech ID: 24T063
+- **Range-Based Hardware Optimization of Multi-Layer Perceptrons with ReLUs**  
+  Inventor: Srinivas Katkoori, Lakshmi Kavya Kalyanam  
+  USF Tech Ref: 23T078US | Q&B Ref: 173738.02709
+
+---
+
+## 🏆 Awards & Honors
+- Best Paper Award, IEEE iSES 2023
+- Best Paper Award, IEEE iSES 2020
+- Judge, USF Virtual Graduate Research Symposium — 2022, 2023
+
+---
+
+## 📬 Contact
+- Email: kavyakalyanamk@gmail.com
+- [LinkedIn](https://www.linkedin.com/in/lakshmikavya-kalyanam-a88633131/)
+- [GitHub](https://github.com/kavyakl)
+- [ResearchGate](https://www.researchgate.net/profile/Lakshmikavya-Kalyanam)
+
+---
+
+## 📅 Timeline
+2019 – PhD start | 2020 – Best Paper (iSES) | 2022 – Sparse CNN framework | 2023 – 2nd Best Paper Award | 2024 – LitBot | 2025 – Graduation 

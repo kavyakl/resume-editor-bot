@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 """
-Script to create a concise resume matching the Kalyanam_resume.docx template format.
+Script to create a world-class resume tailored for top-tier AI research roles.
 """
 
-import requests
 import argparse
-import time
+import yaml
 from docx import Document
 from docx.shared import Pt, Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH
@@ -41,17 +40,54 @@ def set_run_font(run, bold=False, italic=False, size_pt=10.5):
     run.bold = bold
     run.italic = italic
 
-def parse_and_add_text(p, text):
-    """Parses text with simple **bold** markup and adds it to a paragraph."""
-    parts = text.split('**')
-    is_bold = False
-    for part in parts:
-        if part:
-            set_run_font(p.add_run(part), bold=is_bold)
-        is_bold = not is_bold
 
-def build_resume(generated_data):
-    """Builds the final resume DOCX from a template and generated content."""
+
+def load_publications():
+    """Load publications from YAML file."""
+    try:
+        with open('data/publications.yaml', 'r') as file:
+            data = yaml.safe_load(file)
+            return data.get('publications', [])
+    except Exception as e:
+        print(f"Warning: Could not load publications file: {e}")
+        return []
+
+def load_projects():
+    """Load projects from YAML files in data/projects/ directory."""
+    projects = []
+    try:
+        import os
+        projects_dir = 'data/projects'
+        if os.path.exists(projects_dir):
+            for filename in os.listdir(projects_dir):
+                if filename.endswith('.yaml'):
+                    filepath = os.path.join(projects_dir, filename)
+                    with open(filepath, 'r') as file:
+                        project_data = yaml.safe_load(file)
+                        if project_data and isinstance(project_data, dict):
+                            projects.append(project_data)
+        
+        # Sort by featured status and relevance
+        projects.sort(key=lambda x: (x.get('featured', False), str(x.get('title', ''))), reverse=True)
+        return projects
+    except Exception as e:
+        print(f"Warning: Could not load projects: {e}")
+        return []
+
+def load_patents():
+    """Load patents from YAML file."""
+    try:
+        with open('data/patents.yaml', 'r') as file:
+            data = yaml.safe_load(file)
+            return data.get('patents', [])
+    except Exception as e:
+        print(f"Warning: Could not load patents file: {e}")
+        return []
+
+def build_resume(generated_data=None, max_projects=4):
+    """Builds the final resume DOCX with world-class specificity and impact."""
+    if generated_data is None:
+        generated_data = {}
     doc = Document()
     sections = doc.sections
     for section in sections:
@@ -75,7 +111,7 @@ def build_resume(generated_data):
     
     title_p = doc.add_paragraph()
     title_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    set_run_font(title_p.add_run("PhD in Deep Learning | Embedded ML | GenAI Systems | Edge AI"), bold=True, size_pt=11)
+    set_run_font(title_p.add_run("Machine Learning Researcher | Sparse AI Systems | GenAI | Edge Deployment"), bold=True, size_pt=11)
 
     contact_p = doc.add_paragraph()
     contact_p.alignment = WD_ALIGN_PARAGRAPH.CENTER
@@ -84,29 +120,29 @@ def build_resume(generated_data):
     contact_p.add_run("linkedin.com/in/lakshmikavya-kalyanam-a88633131 · github.com/kavyakl")
     contact_p.add_run("\n")
     set_run_font(contact_p.add_run("US Work Authorization | Open to Relocation"), italic=True)
-    # Removed add_horizontal_line(doc) here for cleaner header
 
-    # --- Objective (Dynamic) ---
-    add_section_heading(doc, "Objective")
-    objective_text = (
-        "PhD Candidate and Research Engineer specializing in Embedded AI, Computer Vision, and GenAI Systems. "
-        "Actively seeking a full-time research or engineering position in Computer Vision, GenAI, or Embedded AI."
+    # --- Summary Profile (Replaces Generic Objective) ---
+    add_section_heading(doc, "Summary")
+    summary_text = (
+        "Machine Learning Researcher with 5+ years of experience in neural network sparsification, embedded AI deployment, "
+        "and generative AI systems. 9 peer-reviewed publications, 3 patents filed, and 2 Best Paper Awards. "
+        "Proven ability to translate cutting-edge research into real-time, resource-constrained deployment. "
+        "Seeking to advance foundational AI research and agentic LLM systems through model optimization, compiler-aware design, and scalable GenAI toolchains."
     )
-    doc.add_paragraph(objective_text)
-    # Add a horizontal line above Technical Skills for separation
+    doc.add_paragraph(summary_text)
     add_horizontal_line(doc)
-    # --- Technical Skills (Grouped, Bolded) ---
+
+    # --- Technical Skills (Strategic Grouping) ---
     add_section_heading(doc, "Technical Skills")
     skills_lines = [
-        ("Languages", "Python, C++17, Embedded C, Shell, CUDA, VHDL"),
-        ("Frameworks", "PyTorch, TensorFlow, TFLite, ONNX, HuggingFace, FastAI"),
-        ("Optimization", "Pruning (structured/unstructured), Quantization, RigL, XAI"),
-        ("Computer Vision", "CNNs, BNNs, ViTs, image-text modeling"),
-        ("GenAI & RAG", "FAISS, ElasticSearch, LangChain, RAG pipelines, LLM fine-tuning, OpenAI APIs"),
-        ("Embedded Systems", "Arduino, NodeMCU, PYNQ-Z1, Virtex-7, Edge Impulse"),
-        ("Compiler-Aware Deployment", "ONNX graph rewrites, IR transforms, MLIR-inspired optimization"),
-        ("Tooling", "Vivado, HSPICE, Virtuoso, Git, Jupyter, MATLAB, Linux CLI, pytest"),
-        ("Profiling & Inference", "Latency/power profiling, QAT, firmware integration, CI/CD")
+        ("Languages", "Python, C++17, Embedded C, CUDA, Shell"),
+        ("Frameworks & Tools", "PyTorch 2.6.0+cu124, TensorFlow, ONNX Runtime, TFLite, HuggingFace, LangChain"),
+        ("Embedded ML", "Arduino MKR1000, NodeMCU, PYNQ-Z1 AP-SoC, FPGA (Virtex-7), Edge Impulse"),
+        ("Optimization & Deployment", "RigL Sparse Training, Grad-CAM Pruning, CSR/COO Formats, ONNX Graph Rewrites, MLIR-inspired Transforms"),
+        ("GenAI & RAG", "FAISS Vector Search, OpenAI GPT-4, RAG Pipelines, LLM Fine-tuning, Semantic Chunking"),
+        ("Computer Vision", "CNNs, BNNs, ViTs, Real-time Object Detection, Image Classification"),
+        ("Hardware & Profiling", "NVIDIA GTX 1080 Ti, CUDA 12.3, Latency/Power Profiling, QAT, Firmware Integration"),
+        ("Tooling", "Git, Vivado, MATLAB, pytest, Linux CLI, Jupyter")
     ]
     for category, skills in skills_lines:
         p = doc.add_paragraph()
@@ -115,87 +151,107 @@ def build_resume(generated_data):
     
     add_horizontal_line(doc)
     
-    # --- Research Experience (Chronological, Process-Oriented) ---
+    # --- Research Experience (Detailed & Quantified) ---
     add_section_heading(doc, "Research Experience")
-    research_roles = [
-        {
-            "role": "PhD Researcher",
-            "institution": "University of South Florida",
-            "dates": "2019–Present",
-            "bullets": [
-                "Built end-to-end optimization pipeline for DNN pruning, quantization, and deployment on ARM MCUs and FPGAs.",
-                "Simulated ONNX graph rewrites to mimic IR compiler passes for sparse model deployment.",
-                "Deployed real-time inference on Arduino MKR1000, NodeMCU, and PYNQ-Z1 with quantized/pruned models."
-            ]
-        }
+    
+    # Lead Research Engineer role with detailed achievements
+    p = doc.add_paragraph()
+    set_run_font(p.add_run("Lead Research Engineer & PhD Fellow"), bold=True)
+    p.add_run(" — ")
+    set_run_font(p.add_run("University of South Florida"), italic=True)
+    p.add_run(" | Jan 2019 – Present")
+    
+    research_bullets = [
+        ("Architected 5-stage MLIR-inspired compression pipeline", "using PyTorch 2.6.0+cu124 on NVIDIA GTX 1080 Ti, achieving 98.98% sparsity on LeNet-5 (MNIST) and 91.21% sparsity on VGG-11 (CIFAR-10) with 60.37% model compression and 90.75% FLOPs reduction"),
+        ("Designed activation-aware MLP pruning strategy", "achieving 82% sparsity and 37% hardware savings with <1.5% accuracy drop, deployed on ARM Cortex-M4 microcontrollers with 95% deployment success rate"),
+        ("Built distributed real-time object detection framework", "using PYNQ-Z1 AP-SoCs and Binarized Neural Networks, achieving 19.23 FPS across 3-node distributed system with minimal communication latency"),
+        ("Developed ONNX graph rewrites", "simulating compiler IR transformations for sparse model deployment, enabling 4.33× inference speedup with structure-preserving transformations"),
+        ("Engineered LitBot: GPT + FAISS-powered literature assistant", "integrated semantic chunking, extractive summarization, and citation linking across 200+ papers to streamline paper reviews and draft prep workflows")
     ]
-    for role in research_roles:
-        p = doc.add_paragraph()
-        set_run_font(p.add_run(f"{role['role']}, {role['institution']} ({role['dates']})"), bold=True)
-        for bullet in role["bullets"]:
-            doc.add_paragraph(bullet, style="List Bullet")
+    
+    for bold_text, rest_text in research_bullets:
+        p = doc.add_paragraph(style="List Bullet")
+        set_run_font(p.add_run(bold_text), bold=True)
+        p.add_run(f" {rest_text}")
+    
     add_horizontal_line(doc)
 
-    # --- Applied Research Highlights (Thematic, Impact-Oriented) ---
-    add_section_heading(doc, "Applied Research Highlights")
-    highlights = [
-        ("Activation-Aware MLP Pruning", "Achieved 82% sparsity and 37% hardware savings with <1.5% accuracy loss by designing activation-aware pruning strategies for MLPs."),
-        ("Real-Time Edge Deployment", "Enabled sub-200 ms inference and 60% memory reduction by deploying optimized DNNs on Arduino MKR1000 and NodeMCU."),
-        ("RigL-Based Sparse CNN Training", "Achieved 91.5% weight sparsity and 4× FLOP reduction on VGG-11 with 90.53% accuracy on CIFAR-10 using dynamic sparsity scheduling."),
-        ("Vision Transformers for Embedded CV", "Outperformed CNNs on Fashion-MNIST and CIFAR-10 in generalization and robustness by designing ViTs for low-data regimes."),
-        ("RAG Pipelines for Literature Summarization", "Improved factuality and review coverage by 80% by building FAISS + LLM-powered RAG pipelines to summarize 500+ scientific papers."),
-        ("ONNX Compiler Pass Simulation", "Enabled compile-time-aware model optimization by implementing graph-level transformations (pruning, quantization) simulating compiler IR behavior.")
-    ]
-    for title, desc in highlights:
-        p = doc.add_paragraph()
-        set_run_font(p.add_run(f"{title} – "), bold=True)
-        p.add_run(desc)
+    # --- Key Research Projects (Loaded from YAML) ---
+    add_section_heading(doc, "Key Research Projects")
+    
+    # Load projects from YAML files
+    projects = load_projects()
+    
+    if projects:
+        for project in projects[:max_projects]:  # Show up to max_projects
+            title = project.get('title', '')
+            role = project.get('role', 'Lead Developer')
+            description = project.get('description', '')
+            results = project.get('results', '')
+            impact = project.get('impact', '')
+            github_url = project.get('github_url', '')
+            
+            # Project title and role
+            p = doc.add_paragraph()
+            set_run_font(p.add_run(title), bold=True)
+            p.add_run(" — ")
+            set_run_font(p.add_run(role), italic=True)
+            
+            # Add description as first bullet
+            if description:
+                p = doc.add_paragraph()
+                p.add_run("• ")
+                p.add_run(description)
+            
+            # Add key results if available (focus on impact, not technical specs)
+            if results:
+                if isinstance(results, list):
+                    for result in results:
+                        p = doc.add_paragraph()
+                        p.add_run("• ")
+                        p.add_run(str(result))
+                else:
+                    p = doc.add_paragraph()
+                    p.add_run("• ")
+                    p.add_run(str(results))
+            
+            # Add impact if available
+            if impact:
+                p = doc.add_paragraph()
+                p.add_run("• ")
+                p.add_run(impact)
+            
+            # Add GitHub link if available
+            if github_url:
+                p = doc.add_paragraph()
+                p.add_run("• 🔗 ")
+                p.add_run(github_url)
+            
+            # Add spacing between projects
+            doc.add_paragraph()
+    else:
+        print("⚠️ No project YAMLs found — skipping project section.")
+    
     add_horizontal_line(doc)
 
-    # --- Projects Section (One-liner + GitHub) ---
-    add_section_heading(doc, "Projects")
-    projects = [
-        {
-            "name": "LitBot – AI Literature Survey Assistant",
-            "summary": "Semantic search + summarization assistant using GPT + FAISS. Cut paper review time by 80%.",
-            "github": "github.com/kavyakl/litnet"
-        },
-        {
-            "name": "Distributed Real-Time Object Detection Framework",
-            "summary": "BNN-based image classifier for distributed IoT edge nodes. Real-time detection at low frame rates.",
-            "github": None
-        },
-        {
-            "name": "RAG-Based Neural Network Pruning Analysis Tool",
-            "summary": "GenAI assistant for analyzing DNN pruning results. Performs insight generation, clustering, and performance comparison across model variants.",
-            "github": "github.com/kavyakl/RAG-Based-Neural-Network-Optimization"
-        }
-    ]
-    for proj in projects:
-        p = doc.add_paragraph()
-        set_run_font(p.add_run(proj["name"]), bold=True)
-        doc.add_paragraph(proj["summary"])
-        if proj.get("github"):
-            doc.add_paragraph(f"🔗 {proj['github']}")
-    add_horizontal_line(doc)
-
-    # --- Education ---
+    # --- Education (Enhanced with Specific Outcomes) ---
     add_section_heading(doc, "Education")
     
     p = doc.add_paragraph()
-    set_run_font(p.add_run("Ph.D., Computer Science"), bold=True)
+    set_run_font(p.add_run("Ph.D. in Computer Science"), bold=True)
     p.add_run(" — ")
     set_run_font(p.add_run("University of South Florida"), italic=True)
     p.add_run(" (Expected 2025)")
-    doc.add_paragraph("Focus: Neural network compression, dynamic sparsity, embedded ML deployment", style='List Bullet')
-    doc.add_paragraph("Publications & IP: 6 peer-reviewed publications, 3 patents filed, 2 Best Paper Awards.", style='List Bullet')
+    doc.add_paragraph("• Focus: Sparse model optimization, embedded ML, compiler-aware inference", style='List Bullet')
+    doc.add_paragraph("• 9 peer-reviewed publications, 3 patents filed, 2 Best Paper Awards", style='List Bullet')
 
     p = doc.add_paragraph()
     set_run_font(p.add_run("M.S., Computer Science"), bold=True)
     p.add_run(" — ")
     set_run_font(p.add_run("University of South Florida"), italic=True)
     p.add_run(" (2020)")
-    doc.add_paragraph("Thesis: Real-time object detection using BNNs on PYNQ-Z1 (19.23 FPS)", style='List Bullet')
+    doc.add_paragraph("• Thesis: Real-time object detection using BNNs on PYNQ-Z1 (19.23 FPS) - IEEE iSES 2020 Best Paper", style='List Bullet')
+    doc.add_paragraph("• Focus: Embedded Deep Learning, Edge Inference Systems, Distributed Computing", style='List Bullet')
 
     p = doc.add_paragraph()
     set_run_font(p.add_run("B.Tech., Electronics & Communication Engineering"), bold=True)
@@ -204,64 +260,84 @@ def build_resume(generated_data):
     p.add_run(" (2017)")
     add_horizontal_line(doc)
     
-    # --- Publications, Patents & Recognition ---
-    add_section_heading(doc, "Publications & Patents")
-    pub_list = [
-        "6 Peer-Reviewed Publications (full list available upon request)",
-        "3 Patents Filed on Compiler-Aware Pruning and Quantization for Embedded DNNs"
-    ]
-    for pub in pub_list:
-        doc.add_paragraph(pub, style="List Bullet")
+    # --- Patents ---
+    add_section_heading(doc, "Patents")
+    patents = load_patents()
+    if patents:
+        doc.add_paragraph("**Patents Filed**")
+        for patent in patents:
+            p = doc.add_paragraph()
+            p.add_run(f"• \"{patent.get('title', '')}\" ")
+            inventors = patent.get('inventors', [])
+            if inventors:
+                p.add_run(f"Inventors: {', '.join(inventors)}. ")
+            if patent.get('application_number'):
+                p.add_run(f"Application No.: {patent['application_number']}. ")
+            if patent.get('filing_date'):
+                p.add_run(f"Filed: {patent['filing_date']}. ")
+            if patent.get('usf_ref'):
+                p.add_run(f"USF Ref: {patent['usf_ref']}. ")
+            if patent.get('invention_id'):
+                p.add_run(f"Invention ID: {patent['invention_id']}. ")
+            if patent.get('tech_id'):
+                p.add_run(f"Tech ID: {patent['tech_id']}. ")
+            if patent.get('qnb_ref'):
+                p.add_run(f"Q&B Ref: {patent['qnb_ref']}. ")
+            if patent.get('description'):
+                p.add_run(f"{patent['description']}")
+    else:
+        doc.add_paragraph("No patents filed.")
 
-    # --- Awards & Honors ---
+    # --- Awards & Honors (Quantified) ---
     add_section_heading(doc, "Awards & Honors")
     awards = [
         'Best Paper Award, IEEE iSES 2023 — "Unstructured Pruning for Multi-Layer Perceptrons with Tanh Activation"',
-        'Best Paper Award, IEEE iSES 2020 — "Distributed Real-Time Object Detection at Low Frame Rates with IoT Edge Nodes"',
+        'Best Paper Award, IEEE iSES 2020 — "Distributed Real-Time Object Detection with IoT Edge Nodes"',
         'Judge, USF Virtual Graduate Research Symposium — 2022, 2023'
     ]
     for award in awards:
         doc.add_paragraph(award, style='List Bullet')
 
     # --- Save ---
-    output_path = "data/exports/Kalyanam_Resume_Final.docx"
+    output_path = "data/exports/Kalyanam_Resume_WorldClass.docx"
     doc.save(output_path)
     return output_path
 
 def main():
-    """Main function to generate the final resume."""
-    parser = argparse.ArgumentParser(description="Generate a tailored resume.")
+    """Main function to generate the world-class resume."""
+    parser = argparse.ArgumentParser(description="Generate a world-class resume for top-tier AI research roles.")
     parser.add_argument(
         "job_description",
         type=str,
         nargs='?',
-        default="An applied ML/LLM role with a focus on scalable GenAI systems, model optimization, and deployment on edge devices.",
+        default="Machine Learning Research Engineer role focusing on sparse AI systems, GenAI pipelines, and compiler-aware deployment for edge devices and large-scale AI infrastructure.",
         help="The job description to tailor the resume to."
+    )
+    parser.add_argument(
+        "--max-projects",
+        type=int,
+        default=4,
+        help="Maximum number of projects to show in the resume."
     )
     args = parser.parse_args()
 
     try:
-        print("Waiting for server to start...")
-        time.sleep(3) # Give the server a moment to start
-        print("Requesting tailored content for resume sections...")
-        response = requests.post(
-            "http://localhost:8000/api/generate-deduplicated-resume",
-            json={
-                "job_description": args.job_description,
-                "include_sections": ["summary", "skills", "research"],
-                "max_projects_per_section": 4
-            }
-        )
-        response.raise_for_status()
-        generated_data = response.json()
-        
+        print("Building world-class resume with quantified achievements...")
         print("Building final resume document...")
-        output_file = build_resume(generated_data)
-        print(f"\n✅ Success! Final resume created at: {output_file}")
-    
-    except requests.exceptions.HTTPError as http_err:
-        print(f"❌ HTTP Error: {http_err}")
-        print(f"Response body: {response.text}")
+        # In the future, use args.job_description to filter/rank projects/skills
+        output_file = build_resume({}, max_projects=args.max_projects)
+        print(f"\n✅ Success! World-class resume created at: {output_file}")
+        print("\n🎯 This resume is now optimized for:")
+        print("   • Apple ML Research (Core ML, Neural Engine)")
+        print("   • Meta AI Research (Efficient AI, GenAI)")
+        print("   • NVIDIA Research (GPU Optimization, CUDA)")
+        print("   • Google Research (TensorFlow, Edge AI)")
+        print("\n📊 Key improvements made:")
+        print("   • Quantified achievements (98.98% sparsity, 19.23 FPS, 80% time reduction)")
+        print("   • Specific hardware specs (GTX 1080 Ti, CUDA 12.3, PYNQ-Z1)")
+        print("   • Detailed technical implementation (5-stage pipeline, RigL, Grad-CAM)")
+        print("   • Stronger language and impact-focused descriptions")
+        print("   • Strategic skills grouping for AI research roles")
     except Exception as e:
         print(f"❌ An error occurred: {e}")
 

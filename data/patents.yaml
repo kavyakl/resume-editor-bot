@@ -1,0 +1,19 @@
+patents:
+  - title: "Layer-Wise Filter Thresholding Based CNN Pruning for Efficient IoT Edge Implementations"
+    inventors: ["Srinivas Katkoori", "Lakshmi Kavya Kalyanam"]
+    application_number: "63/552,084"
+    filing_date: "2024-02-09"
+    usf_ref: "24T085US"
+    description: "Provisional patent for a thresholding-based CNN pruning method for efficient IoT edge deployment."
+
+  - title: "Unstructured Pruning for Multi-Layer Perceptrons with Tanh Activation"
+    inventors: ["Srinivas Katkoori", "Lakshmi Kavya Kalyanam"]
+    invention_id: "USF23/00331"
+    tech_id: "24T063"
+    description: "Patent for unstructured pruning techniques for MLPs with tanh activation."
+
+  - title: "Range-Based Hardware Optimization of Multi-Layer Perceptrons with ReLUs"
+    inventors: ["Srinivas Katkoori", "Lakshmi Kavya Kalyanam"]
+    usf_ref: "23T078US"
+    qnb_ref: "173738.02709"
+    description: "Patent for range-based hardware optimization of MLPs with ReLU activation." 

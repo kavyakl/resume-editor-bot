@@ -1,49 +1,20 @@
 title: Neural Network Optimization Framework
-slug: neural-network-optimization-framework
-description: Engineered a unified analysis and deployment pipeline for DNNs across 10+ datasets, integrating ONNX export, Edge Impulse deployment, and structural pruning to enable profiling and compression for both cloud and embedded inference scenarios.
+description: Engineered a unified correlation-based pruning framework for DNNs across 9 diverse datasets, integrating activation-aware optimization, ONNX export, and real microcontroller deployment to enable comprehensive benchmarking and practical deployment guidelines.
 role: Lead Developer
 technologies:
 - Neural Networks
 - ONNX
-- Edge Impulse
 - Arduino
 - C++
+- PyTorch
 methods:
-- Training neural networks
-- Structural pruning
-- Multi-activation analysis
-- Correlation-based neuron pruning
-- Edge device optimization
-- Model architecture analysis
-- Parameter counting
-- Inference time profiling
-- LLM-powered insights
-results: The framework provides a streamlined process for training, comprehensive analysis, and deploying optimized neural networks. It successfully supports various models across diverse domains like medical diagnosis and fraud detection.
-impact: "Enabled a unified, end-to-end workflow for model optimization, allowing developers
-  to systematically analyze trade-offs between model size, performance, and accuracy for both cloud and embedded deployment targets."
-duration: "12 months"
-team_size: "2"
-challenges: "Ensuring model compatibility and performance across a wide range of heterogeneous datasets and edge hardware."
-github_url: "https://github.com/kavyakl/RAG-Based-Neural-Network-Optimization"
-created_at: '2025-06-22T11:58:00.127201'
-sections: ["research", "project"]
-relevance_tags: ["ml", "optimization", "edge-ai", "onnx", "pruning", "deployment", "research"]
-featured: true
-source_text: I developed a comprehensive Neural Network Optimization Analysis Framework
-  for analyzing, optimizing, and deploying neural networks across multiple datasets
-  with focus on edge device compatibility and performance profiling. The framework
-  provides a complete pipeline for training neural networks on 10+ datasets with different
-  activation functions (ReLU, Sigmoid, Tanh), implementing structural pruning to reduce
-  model complexity while maintaining accuracy, ONNX export for cross-platform deployment,
-  Edge Impulse profiling for embedded device compatibility, and Arduino deployment
-  with optimized C++ implementations. Key features include multi-activation analysis
-  comparing ReLU, Sigmoid, and Tanh activations with automated batch processing, correlation-based
-  neuron pruning with activity and sensitivity analysis, edge device optimization
-  with ONNX model export and Edge Impulse integration, comprehensive analysis including
-  model architecture analysis, parameter counting, inference time profiling, and LLM-powered
-  insights. The system supports datasets including Iris, Breast Cancer, Credit Card,
-  Balance, Customers, Fetal Health, Liver Diagnostic, Raisin, and Yeast across various
-  domains like medical diagnosis, fraud detection, and agricultural analysis. The
-  framework includes automated end-to-end processing from training to deployment with
-  bulk processing capabilities, result consolidation, and comprehensive reporting.
-filename: neural_network_optimization_analysis_framework
+- Activation-aware structural pruning
+- Multi-activation analysis (ReLU, Sigmoid, Tanh)
+- Correlation-based neuron scoring
+- Real hardware deployment validation
+- ONNX-to-C conversion pipeline
+- Microcontroller optimization
+results: "Achieved 37-75% model size reduction, 36.6% average latency reduction, 
+and 95% deployment success rate while maintaining accuracy within 1.4% of baseline models."
+impact: "Provided first systematic evaluation of activation-aware pruning on real 
+microcontroller hardware, enabling data-driven deployment guidelines for TinyML practitioners."

@@ -1,35 +1,38 @@
 title: Dynamic Sparsity Optimization for CNNs
 slug: dynamic-sparsity-optimization
-description: Developed adaptive pruning strategies with sparsity-aware training loops using PyTorch and CUDA 12.3 to optimize ranking-quality CNNs.
+description: Designed and implemented a 5-stage, compiler-aware model compression and deployment pipeline for CNNs, inspired by IR/MLIR-style transformations. The system progressively transforms models from dense to sparse to fused to compressed to ONNX-deployable forms, preserving structured sparsity and accuracy at each stage for efficient deployment.
 role: Lead Researcher
 technologies:
-- PyTorch 2.1.2
-- CUDA 12.3 (cu121)
-- NVIDIA GeForce GTX 1080 Ti (11264 MiB)
-- GPU Training
-- Convolutional Neural Networks (CNNs)
-- Dynamic Pruning
-- Sparsity Optimization
-- Computer Vision
-- Model Compression
+  - PyTorch 2.6.0+cu124
+  - CUDA 12.3
+  - NVIDIA GeForce GTX 1080 Ti (11264 MiB)
+  - Convolutional Neural Networks (CNNs)
+  - RigL Sparse Training
+  - Grad-CAM Structured Pruning (30% conv1 filter pruning)
+  - CSR/COO Sparse Formats
+  - FP16 Quantization
+  - ONNX Runtime
+  - Model Compression
+  - Compiler-Inspired Optimization
 methods:
-- Dynamic sparsity scheduling during training
-- GPU-accelerated CNN training with CUDA 12.3
-- Adaptive pruning rate adjustment
-- Sparsity-aware gradient computation
-- Real-time model complexity monitoring
-- Cross-platform model deployment optimization
-- Large-scale model training on high-memory GPU
-results: Achieved up to 80% compression and 3-5x inference speedup on CNNs while maintaining accuracy, demonstrating a scalable optimization path for high-performance models in edge applications.
-impact: "The research provides a robust method for significantly reducing the computational
-  cost of CNNs, making them viable for deployment on resource-constrained edge devices
-  without compromising performance."
+  - MLIR-inspired, modular pipeline with progressive IR-style passes
+  - 5-stage transformation: Dense → Sparse → Fused → Compressed → ONNX
+  - Grad-CAM computed once before training using test set for feature importance
+  - Adaptive sparsity scheduling (5% increments when accuracy stable)
+  - Operator fusion and format conversion for ONNX compatibility
+  - Comprehensive ablation study across all pipeline stages
+  - Real-time monitoring of sparsity, FLOPs, and memory during training
+results: 
+  - Achieved 98.98% sparsity on LeNet-5 (MNIST) and 91.21% sparsity on VGG-11 (CIFAR-10)
+  - 60.37% model compression with maintained accuracy
+  - 4.33× inference speedup with ONNX optimization
+impact: "Demonstrates a compiler-aware compression framework for efficient CNN deployment on resource-constrained environments"
 duration: "12 months"
-team_size: 2
-challenges: Balancing sparsity levels with model accuracy, optimizing CUDA kernels for sparse operations, and developing efficient dynamic pruning algorithms that don't significantly slow down training. Managing GPU memory efficiently with the 11264 MiB capacity for large-scale model training.
+team_size: 1
+challenges: "Integrating pruning, quantization, and graph-level operator fusion while maintaining accuracy; preserving structured sparsity through all transformation stages; conducting rigorous ablation study to measure impact of each pipeline stage; ensuring Grad-CAM-guided pruning doesn't compromise model performance."
 created_at: '2025-01-27T10:00:00.000000'
 sections: ["research", "project"]
-relevance_tags: ["ml", "optimization", "pruning", "gpu", "cuda", "computer-vision", "research", "edge-ai"]
+relevance_tags: ["ml", "optimization", "sparsity", "gpu", "cuda", "computer-vision", "research", "edge-ai", "onnx", "deployment", "compression", "compiler"]
 featured: true
-source_text: I conducted research on dynamic sparsity optimization for Convolutional Neural Networks using NVIDIA GeForce GTX 1080 Ti GPU with 11264 MiB memory and PyTorch 2.1.2 with CUDA 12.3 (cu121). The project involved developing adaptive pruning strategies that can dynamically adjust model sparsity during training to optimize for both accuracy and computational efficiency. We leveraged the substantial computational power of the GTX 1080 Ti for GPU-accelerated training, achieving 3-5x faster training times compared to CPU-only implementations. The large GPU memory capacity enabled larger batch sizes and more complex model architectures. The dynamic sparsity approach achieved up to 80% model compression while maintaining competitive accuracy on image classification tasks. Key challenges included balancing sparsity levels with model accuracy, optimizing CUDA kernels for sparse operations, and developing efficient dynamic pruning algorithms that don't significantly slow down training. This research contributes to the field of efficient deep learning for edge devices and real-time applications, demonstrating the effectiveness of high-performance GPU computing for model optimization research.
-filename: dynamic_sparsity_optimization 
+source_text: "I led research on dynamic sparsity optimization for CNNs using NVIDIA GeForce GTX 1080 Ti and PyTorch 2.6.0+cu124 with CUDA 12.3. I architected a 5-stage, MLIR-inspired compression and deployment pipeline: (1) dense baseline, (2) RigL-based sparse training with Grad-CAM-guided pruning (computed once before training), (3) BatchNorm fusion for operator reduction, (4) compression using CSR/COO sparse formats and FP16 storage, and (5) ONNX export and deployment with structure-preserving transformations. The pipeline achieved 98.98% sparsity for LeNet-5 and 91.21% sparsity for VGG-11, with 60.37% model compression and maintained or improved accuracy across all stages. Each stage was validated via ablation analysis, establishing a reproducible, compiler-aware path to efficient deep learning deployment."
+filename: dynamic_sparsity_optimization
