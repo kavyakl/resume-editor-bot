@@ -1,211 +1,137 @@
 # Resume Editor Bot
 
-An intelligent resume editing assistant powered by RAG (Retrieval-Augmented Generation) that helps users create, optimize, and tailor their resumes using LLMs. Now enhanced with **project-based resume generation** for job-specific tailoring.
+A modular, YAML-driven resume generation and analysis system for AI researchers and engineers. Supports both API-based and local script workflows, with dynamic project, publication, and patent integration.
 
-## 🚀 New Features: Project-Based Resume Generation
+## 🚀 Key Features
+- **World-class resume generation** (local script or API)
+- **YAML-driven data**: Projects, publications, and patents are structured and easy to update
+- **Factual, quantified project claims**
+- **Dynamic patent and publication loading**
+- **ATS-friendly, recruiter-ready formatting**
+- **Streamlit UI for interactive editing**
+- **API for advanced automation and integration**
 
-The system now supports **structured project data** for intelligent resume tailoring:
+---
 
-- **📝 Project Dump Parsing**: Convert natural language project descriptions into structured YAML format
-- **🎯 Smart Project Ranking**: AI-powered relevance ranking of projects for specific job descriptions
-- **✍️ Tailored Resume Generation**: Generate job-specific resume sections based on ranked projects
-- **🔍 Advanced Job Analysis**: Extract skills, requirements, and focus areas from job descriptions
-- **📊 Project Analytics**: Statistics and insights about your project portfolio
-
-## Core Features
-
-- Dynamic Resume Drafting
-- Contextual Suggestions
-- Job Description Matching
-- Bullet Point Optimization
-- Version Control & Comparison
-- Real-time Feedback
-- **NEW**: Project-based resume tailoring
-- **NEW**: Intelligent project ranking
-- **NEW**: Structured project management
-
-## Project Structure
-
+## 🗂️ Project Structure
 ```
 resume_editor/
-├── app/
-│   ├── api/            # FastAPI routes
-│   ├── core/           # Core business logic
-│   │   ├── config.py   # Configuration
-│   │   ├── job_parser.py # Job description parsing
-│   │   └── prompts.py  # Prompt templates
-│   ├── models/         # Data models
-│   ├── services/       # Business services
-│   │   ├── project_parser.py      # NEW: Parse project dumps
-│   │   ├── project_store.py       # NEW: Manage project data
-│   │   ├── relevance_ranker.py    # NEW: Rank projects by relevance
-│   │   ├── resume_writer.py       # NEW: Generate tailored resumes
-│   │   ├── rag_service.py         # Vector search
-│   │   ├── job_analysis_service.py # Job analysis
-│   │   ├── export_service.py      # Export functionality
-│   │   └── resume_parser_service.py # Resume parsing
-│   └── utils/          # Utility functions
-├── config/             # Configuration files
-├── data/              # Data storage
-│   ├── embeddings/    # Vector embeddings
-│   ├── projects/      # NEW: Structured project files (YAML)
-│   ├── resumes/       # Resume storage
-│   └── exports/       # Final resume variants
-├── tests/             # Test files
-├── main.py           # Application entry point
-├── streamlit_app.py  # Streamlit UI
-└── test_project_system.py # NEW: Test script
+├── app/                  # FastAPI backend
+│   ├── api/              # API routes
+│   ├── core/             # Core logic
+│   ├── models/           # Data models
+│   ├── services/         # Business logic
+│   └── utils/            # Utilities
+├── config/               # Config files
+├── data/
+│   ├── projects/         # Project YAMLs
+│   ├── publications.yaml # Publications YAML
+│   ├── patents.yaml      # Patents YAML
+│   └── exports/          # Resume DOCX output
+├── scripts/
+│   ├── create_concise_resume.py   # Local resume generator
+│   ├── compare_resume_versions.py # Resume comparison tool
+├── tests/
+│   └── ui/streamlit_app.py        # Streamlit UI
+├── README.md
+└── requirements.txt
 ```
 
-## 🛠️ Setup
+---
 
-1. Create a virtual environment:
+## 🛠️ Setup
+1. **Create a virtual environment:**
 ```bash
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
-
-2. Install dependencies:
+2. **Install dependencies:**
 ```bash
 pip install -r requirements.txt
 ```
 
-3. Set up environment variables:
-```bash
-cp .env.example .env
-# Edit .env with your OpenAI API key and other configurations
+---
+
+## 📄 YAML Data Model
+
+### Example: Project YAML
+```yaml
+title: "LitBot: AI Literature Survey Assistant"
+description: "Designed and built LitBot, a custom GPT + FAISS-powered literature assistant for neural network sparsity research. Integrated semantic chunking, extractive summarization, and citation linking across 200+ papers."
+technologies:
+  - OpenAI GPT models
+  - FAISS
+results: "Integrated semantic chunking, extractive summarization, and citation linking across 200+ papers."
+github_url: "https://github.com/kavyakl/litnet"
+featured: true
 ```
 
-4. Test the system:
-```bash
-python test_project_system.py
+### Example: Publication YAML (in publications.yaml)
+```yaml
+- title: "Unstructured Pruning for Multi-Layer Perceptrons with Tanh Activation"
+  authors: "L. K. Kalyanam, S. Katkoori"
+  venue: "IEEE iSES"
+  year: 2023
+  doi: "10.1109/iSES58672.2023.00025"
+  award: "Best Paper Award"
 ```
 
-5. Run the application:
+### Example: Patent YAML (in patents.yaml)
+```yaml
+- title: "Layer-Wise Filter Thresholding Based CNN Pruning for Efficient IoT Edge Implementations"
+  inventors: ["Srinivasa Katkoori", "Lakshmi Kavya Kalyanam"]
+  application_number: "63/552,084"
+  filing_date: "2024-02-09"
+  usf_ref: "24T085US"
+```
+
+---
+
+## 🖥️ Local Resume Generation
+Generate a world-class resume directly from your YAML data:
+```bash
+python scripts/create_concise_resume.py --max-projects 6
+```
+- Output: `data/exports/Kalyanam_Resume_WorldClass.docx`
+- All content (projects, publications, patents) is loaded dynamically from YAML.
+- Use `--max-projects` to control how many projects are shown.
+
+---
+
+## 🌐 API Usage
+Start the FastAPI backend:
 ```bash
 uvicorn main:app --reload
 ```
+- API docs: http://localhost:8000/docs
+- Supports endpoints for project management, resume generation, job analysis, and more.
 
-## 📚 API Documentation
-
-Once the server is running, visit:
-- Swagger UI: http://localhost:8000/docs
-- ReDoc: http://localhost:8000/redoc
-
-### New Project-Based Endpoints
-
-#### Project Management
-- `POST /api/project-dump` - Parse natural language project descriptions
-- `GET /api/projects` - Get all stored projects
-- `GET /api/projects/{project_title}` - Get specific project
-- `GET /api/projects/search/{query}` - Search projects
-- `GET /api/projects/technology/{technology}` - Filter by technology
-- `GET /api/projects/statistics` - Get project analytics
-
-#### Job Analysis
-- `POST /api/parse-job` - Parse job descriptions into structured format
-- `POST /api/rank-projects` - Rank projects by job relevance
-- `POST /api/project-recommendations` - Get comprehensive recommendations
-
-#### Resume Generation
-- `POST /api/generate-resume-section` - Generate specific resume sections
-- `POST /api/generate-tailored-resume` - Generate complete tailored resume
-- `POST /api/optimize-resume-section` - Optimize existing sections
-- `POST /api/generate-cover-letter-intro` - Generate cover letter introductions
-
-## 🎯 Usage Examples
-
-### 1. Add a Project
-```bash
-curl -X POST "http://localhost:8000/api/project-dump" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "dump_text": "",
-    "project_title": "Real-Time Analytics Dashboard"
-  }'
-```
-
-### 2. Generate Tailored Resume
-```bash
-curl -X POST "http://localhost:8000/api/generate-tailored-resume" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "job_description": "We are looking for a Machine Learning Engineer with experience in Python, TensorFlow, and AWS deployment.",
-    "candidate_skills": ["Python", "TensorFlow", "AWS", "Docker"],
-    "include_sections": ["summary", "experience", "skills"]
-  }'
-```
-
-### 3. Get Project Recommendations
-```bash
-curl -X POST "http://localhost:8000/api/project-recommendations" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "job_description": "Senior ML Engineer position focusing on computer vision and edge deployment."
-  }'
-```
-
-## 📊 Project Data Format
-
-Projects are stored in structured YAML format:
-
-```yaml
-title: "Machine Learning Model Optimization"
-description: "Developed and optimized ML models for edge deployment"
-role: "Lead ML Engineer"
-technologies:
-  - "Python"
-  - "TensorFlow"
-  - "ONNX"
-  - "Docker"
-methods: "Implemented model pruning and quantization techniques"
-results: "Reduced model size by 75% while maintaining 95% accuracy"
-impact: "Enabled real-time inference on edge devices"
-duration: "6 months"
-team_size: "4"
-challenges: "Balancing accuracy with size constraints"
-```
-
-## 🔧 Testing
-
-Run the comprehensive test suite:
-
-```bash
-python test_project_system.py
-```
-
-This will test:
-- Project parsing and storage
-- Job description analysis
-- Project relevance ranking
-- Resume section generation
-- End-to-end workflow
+---
 
 ## 🎨 Streamlit UI
-
-The existing Streamlit interface has been enhanced to support the new project-based features:
-
+Run the interactive UI:
 ```bash
-streamlit run streamlit_app.py
+streamlit run tests/ui/streamlit_app.py
 ```
 
+---
+
+## 🧪 Testing
+Run the test suite:
+```bash
+python tests/test_project_system.py
+```
+
+---
+
 ## 📈 Key Benefits
+- **Factual, quantified, and recruiter-ready resumes**
+- **Easy to update**: Just edit your YAML files
+- **Supports both local and API workflows**
+- **Patent and publication integration**
+- **Modern, modular, and extensible**
 
-1. **🎯 Job-Specific Tailoring**: Automatically rank and select the most relevant projects for each job
-2. **📝 Structured Data**: Convert messy project descriptions into organized, searchable data
-3. **🤖 AI-Powered Insights**: Get intelligent recommendations for resume optimization
-4. **⚡ Fast Generation**: Generate tailored resumes in seconds
-5. **📊 Portfolio Analytics**: Understand your project strengths and technology usage
-
-## 🔮 Future Enhancements
-
-- PDF project import
-- Cover letter generation
-- Resume scoring and feedback
-- Multi-language support
-- Integration with job boards
-- Advanced analytics dashboard
+---
 
 ## License
-
 MIT 
